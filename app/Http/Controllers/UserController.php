@@ -58,12 +58,26 @@ class UserController extends Controller
         // Validate the request...
         $request->validate([
             'nama' => 'required|max:255',
-            'username' => 'required|unique:users',
             'role' => 'required',
         ]);
+
         $user = User::find($id);
+
+        if ($user->username != $request->username) {
+            $request->validate([
+                'username' => 'required|unique:users',
+            ]);
+        } else {
+            $request->validate([
+                'username' => 'required',
+            ]);
+        }
+
+        
         $user->nama = $request->nama;
-        $user->username = $request->username;
+        if($id != 0){
+            $user->username = $request->username;
+        }
         $user->role = $request->role;
         $user->save();
         return redirect()->route('user.index')->with('success', 'Pengguna berhasil diubah.');
@@ -71,6 +85,9 @@ class UserController extends Controller
 
     public function destroy($id)
     {
+        if ($id == 0) {
+            return redirect()->route('user.index')->with('error', 'Akun ini tidak bisa dihapus.');
+        }
         $user = User::find($id);
         $user->delete();
         return redirect()->route('user.index')->with('success', 'Pengguna berhasil dihapus.');

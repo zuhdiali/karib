@@ -64,15 +64,17 @@
                                             <li>Keserasian berpakaian (atasan dan bawahan enak dipandang)</li>
                                         </ul>
                                         <input
-                                            type="number"
+                                            type="range"
                                             min="0"
                                             max="10"
-                                            class="form-control"
+                                            class="form-range"
                                             id="penampilan"
-                                            placeholder="Masukkan nilai penampilan (0-10)"
                                             name="penampilan"
                                             value="{{ old("penampilan") }}"
+                                            oninput="this.nextElementSibling.value = this.value"
                                         />
+                                        Nilai Kebersihan:
+                                        <output>{{ old("penampilan") }}</output>
                                         @if ($errors->has("penampilan"))
                                         <small class="form-text text-muted">{{ $errors->first("penampilan") }}</small>
                                         @endif

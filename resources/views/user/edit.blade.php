@@ -24,10 +24,10 @@
                                             id="nama"
                                             placeholder="Masukkan nama"
                                             name="nama"
-                                            value="@if(@old('nama')) {{ old('nama')}} @else {{$user->nama }}    @endif "
+                                            value="@if(@old('nama')) {{ old('nama')}} @else{{$user->nama}}@endif"
                                         />
                                         @if ($errors->has('nama'))
-                                        <small id="namaHelp" class="form-text text-muted">{{ $errors->first('nama') }}</small>
+                                        <small id="namaHelp" class="form-text text-muted">{{$errors->first('nama')}}</small>
                                         @endif
                                     </div>
                                     <div class="form-group {{$errors->has('username') ? 'has-error has-feedback' : ''}}">
@@ -38,10 +38,12 @@
                                           id="username"
                                           name="username"
                                           placeholder="Masukkan username"
-                                          value="@if(old('username')) {{ old('username') }} @else {{ $user->username }} @endif"
+                                          value="@if(old('username')) {{ old('username') }} @else{{$user->username}}@endif"
+                                          {{-- Kepala BPS tidak bisa diubah usernamenya --}}
+                                          @if($user->id == 0) disabled @endif
                                         />
                                         @if ($errors->has('username'))
-                                        <small class="form-text text-muted">{{ $errors->first('username') }}</small>
+                                        <small class="form-text text-muted">{{$errors->first('username')}}</small>
                                         @else
                                         <small  class="form-text text-muted">
                                         </small>
@@ -54,6 +56,8 @@
                                             class="form-select"
                                             id="role"
                                             name="role"
+                                            {{-- Kepala BPS tidak bisa diubah rolenya --}}
+                                            @if($user->id == 0) disabled @endif
                                         >
                                             <option value="">(Pilih salah satu)</option>
                                             <option value="Admin" {{ $user->role == 'Admin' ? 'selected' : ''}}>Admin</option>
@@ -66,7 +70,7 @@
                                     </div>
 
                                 </div>
-                                <div class="col-md-6">
+                                {{-- <div class="col-md-6">
 
                                     <div class="form-group {{$errors->has('password') ? 'has-error has-feedback' : ''}}">
                                         <label for="password">Password</label>
@@ -98,7 +102,7 @@
                                         @endif
                                     </div>
 
-                                </div>
+                                </div> --}}
                             </div>
                         </div>
                         <div class="card-action">

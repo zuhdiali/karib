@@ -81,7 +81,7 @@
                     </a>
                 </li>
 
-                @if (Auth::check() && (Auth::user()->role == 'Penilai'))
+                @if (Auth::check() && (Auth::user()->role != 'Guest'))
                 <li class="nav-section">
                   <span class="sidebar-mini-icon">
                     <i class="fa fa-ellipsis-h"></i>
@@ -98,7 +98,7 @@
 
                 <li class="nav-item {{ Request::path() ==  'penilaian/ruangan' ? 'active' : ''  }}">
                   <a href="{{route('penilaian.ruangan.index')}}">
-                      <i class="fas fa-user-check"></i>
+                      <i class="fas fa-clipboard-check"></i>
                       <p>Ruangan</p>
                   </a>
                 </li>
@@ -110,7 +110,7 @@
                   <span class="sidebar-mini-icon">
                     <i class="fa fa-ellipsis-h"></i>
                   </span>
-                  <h4 class="text-section">Manajemen</h4>
+                  <h4 class="text-section">Admin</h4>
                 </li>
 
                 <li class="nav-item {{ Request::path() ==  'pegawai' ? 'active' : ''  }}">
@@ -122,8 +122,8 @@
 
                 <li class="nav-item {{ Request::path() ==  'user' ? 'active' : ''  }}">
                     <a href="{{route('user.index')}}">
-                        <i class="fas fa-users"></i>
-                        <p>Manajemen Pengguna</p>
+                        <i class="fas fa-users-cog"></i>
+                        <p>Manajemen Akun</p>
                     </a>
                 </li>
                 @endif
@@ -359,26 +359,6 @@
                   });
               });
           },
-        });
-
-        // Add Row
-        $("#add-row").DataTable({
-          pageLength: 5,
-        });
-
-        var action =
-          '<td> <div class="form-button-action"> <button type="button" data-bs-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task"> <i class="fa fa-edit"></i> </button> <button type="button" data-bs-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove"> <i class="fa fa-times"></i> </button> </div> </td>';
-
-        $("#addRowButton").click(function () {
-          $("#add-row")
-            .dataTable()
-            .fnAddData([
-              $("#addName").val(),
-              $("#addPosition").val(),
-              $("#addOffice").val(),
-              action,
-            ]);
-          $("#addRowModal").modal("hide");
         });
       });
     </script>

@@ -24,15 +24,15 @@
   <div class="page-inner">
     <div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4" >
       <div>
-        <h3 class="fw-bold mb-3">Manajemen Penilaian</h3>
-        <h6 class="op-7 mb-2">Daftar Penilaian website KARIB</h6>
+        <h3 class="fw-bold mb-3">Penilaian Pegawai</h3>
+        <h6 class="op-7 mb-2">Daftar Penilaian Pegawai</h6>
       </div>
       <div class="ms-md-auto py-2 py-md-0">
         @if (Auth::user()->role == 'Penilai' && count($pegawaiBelumDinilai) > 0)
-        <!-- Button trigger modal -->
-        <button type="button" class="btn btn-label-info btn-round me-2" data-bs-toggle="modal" data-bs-target="#exampleModal">
-          Lihat Pegawai Yang Belum Dinilai
-        </button>
+          <!-- Button trigger modal -->
+          <button type="button" class="btn btn-label-info btn-round me-2" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Lihat Pegawai Yang Belum Dinilai
+          </button>
         @endif
         <a href="{{route('penilaian.create')}}" class="btn btn-primary btn-round">Tambah Penilaian</a>
       </div>
@@ -44,14 +44,20 @@
             <div class="row align-items-center">
               <div class="col-icon">
                 <div
-                  class="icon-big text-center icon-primary bubble-shadow-small"
+                  class="icon-big text-center icon-success bubble-shadow-small"
                 >
                   <i class="fas fa-users"></i>
                 </div>
               </div>
               <div class="col col-stats ms-3 ms-sm-0">
                 <div class="numbers">
-                  <p class="card-category">Pegawai Yang Sudah Dinilai Minggu Ini</p>
+                  <p class="card-category">
+                    @if (Auth::user()->role == 'Penilai')
+                      Pegawai Yang Sudah Dinilai Minggu Ini
+                    @else
+                      Total Penilaian Yang Sudah Dilakukan Minggu ini
+                    @endif
+                  </p>
                   <h4 class="card-title">{{$totalPenilaian}}</h4>
                 </div>
               </div>
@@ -66,7 +72,7 @@
             <div class="row align-items-center">
               <div class="col-icon">
                 <div
-                  class="icon-big text-center icon-primary bubble-shadow-small"
+                  class="icon-big text-center icon-danger bubble-shadow-small"
                 >
                   <i class="fas fa-users"></i>
                 </div>

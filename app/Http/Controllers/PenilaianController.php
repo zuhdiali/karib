@@ -20,14 +20,16 @@ class PenilaianController extends Controller
         $penilaians = null;
         $pegawaiBelumDinilai = null;
         if (Auth::user()->role == 'Penilai') {
+            // Mengambil riwayat penilaian minggu ini untuk penilai yang sedang login
             $totalPenilaian = Penilaian::where([
                 ['tanggal_awal_mingguan', '=', Carbon::now()->startOfWeek()->format('Y-m-d')],
                 ['penilai', '=', Auth::user()->id],
             ])->count();
-            $penilaians = Penilaian::where('penilai', Auth::user()->id)->get();
+            $penilaians = Penilaian::where('penilai', Auth::user()->id)->orderBy('created_at', 'desc')->get();
             $pegawaiBelumDinilai = ($this->pegawaiBelumDinilaiMingguIni(Auth::user()->id));
         } else {
-            $penilaians = Penilaian::get();
+            // Jika yang login adalah admin, ambil semua riwayat penilaian
+            $penilaians = Penilaian::orderBy('created_at', 'desc')->get();
             $totalPenilaian = Penilaian::where('tanggal_awal_mingguan', Carbon::now()->startOfWeek()->format('Y-m-d'))->count();
         }
         foreach ($penilaians as $penilaian) {
