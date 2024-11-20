@@ -9,7 +9,7 @@
     />
     <link
       rel="icon"
-      href="{{asset('img/logo_only.png')}}"
+      href="{{asset('img/logo.svg')}}"
       type="image/x-icon"
     />
 
@@ -50,7 +50,7 @@
           <div class="logo-header" data-background-color="dark">
             <a href="{{route('index')}}" class="logo">
               <img
-                src="{{asset('img/logo_blederan.png')}}"
+                src="{{asset('img/logo_only.svg')}}"
                 alt="navbar brand"
                 class="navbar-brand"
                 height="45"
@@ -81,77 +81,61 @@
                     </a>
                 </li>
 
-                @if (Auth::check() && (Auth::user()->role != 'Guest'))
-                <li class="nav-section">
-                  <span class="sidebar-mini-icon">
-                    <i class="fa fa-ellipsis-h"></i>
-                  </span>
-                  <h4 class="text-section">Penilaian</h4>
-                </li>
+                @if(Auth::check())
+                  <li class="nav-section">
+                    <span class="sidebar-mini-icon">
+                      <i class="fa fa-ellipsis-h"></i>
+                    </span>
+                    <h4 class="text-section">Penilaian</h4>
+                  </li>
+                  {{-- Jika bukan Kepala BPS, maka bisa menilai --}}
+                    @if (Auth::user()->id != 0)
+                    <li class="nav-item {{ Request::path() ==  'penilaian' ? 'active' : ''  }}">
+                      <a href="{{route('penilaian.index')}}">
+                          <i class="fas fa-user-check"></i>
+                          <p>Pegawai</p>
+                      </a>
+                    </li>
+                    @endif
 
-                <li class="nav-item {{ Request::path() ==  'penilaian' ? 'active' : ''  }}">
-                  <a href="{{route('penilaian.index')}}">
-                      <i class="fas fa-user-check"></i>
-                      <p>Pegawai</p>
-                  </a>
-                </li>
-
-                <li class="nav-item {{ Request::path() ==  'penilaian/ruangan' ? 'active' : ''  }}">
-                  <a href="{{route('penilaian.ruangan.index')}}">
-                      <i class="fas fa-clipboard-check"></i>
-                      <p>Ruangan</p>
-                  </a>
-                </li>
-                {{-- @endif --}}
-
-                {{-- @if (Auth::check() && (Auth::user()->role == 'Admin')) --}}
-                
-                <li class="nav-section">
-                  <span class="sidebar-mini-icon">
-                    <i class="fa fa-ellipsis-h"></i>
-                  </span>
-                  <h4 class="text-section">Admin</h4>
-                </li>
-
-                <li class="nav-item {{ Request::path() ==  'pegawai' ? 'active' : ''  }}">
-                  <a href="{{route('pegawai.index')}}">
-                      <i class="fas fa-users"></i>
-                      <p>Manajemen Pegawai</p>
-                  </a>
-              </li>
-
-                <li class="nav-item {{ Request::path() ==  'user' ? 'active' : ''  }}">
-                    <a href="{{route('user.index')}}">
-                        <i class="fas fa-users-cog"></i>
-                        <p>Manajemen Akun</p>
+                  <li class="nav-item {{ Request::path() ==  'penilaian/ruangan' ? 'active' : ''  }}">
+                    <a href="{{route('penilaian.ruangan.index')}}">
+                        <i class="fas fa-clipboard-check"></i>
+                        <p>Ruangan</p>
                     </a>
-                </li>
-                @endif
+                  </li>
 
-                {{-- <li class="nav-item {{ Request::path() ==  'admin-akomodasi' ? 'active' : ''  }}">
-                  <a href="{{route('admin-akomodasi')}}">
-                      <i class="fas fa-home"></i>
-                      <p>Akomodasi</p>
-                  </a>
-                </li> --}}
-                {{-- <li class="nav-section">
-                  <span class="sidebar-mini-icon">
-                    <i class="fa fa-ellipsis-h"></i>
-                  </span>
-                  <h4 class="text-section">Informasi {{ getenv('NAMA_DESA') }}</h4>
-                </li> --}}
-                {{-- <li class="nav-item {{ Request::path() ==  'admin-kabar' ? 'active' : ''  }}">
-                  <a href="{{route('admin-kabar')}}">
-                      <i class="fas fa-globe"></i>
-                      <p>Kabar</p>
-                  </a>
-                </li> --}}
-                {{-- <li class="nav-item {{ Request::path() ==  'admin-eduwisata' ? 'active' : ''  }}">
-                  <a href="{{route('admin-eduwisata')}}">
-                      <i class="fas fa-graduation-cap"></i>
-                      <p>Eduwisata</p>
-                  </a>
-                </li> --}}
+                  @if (Auth::user()->role == 'Admin')
+                  
+                  <li class="nav-section">
+                    <span class="sidebar-mini-icon">
+                      <i class="fa fa-ellipsis-h"></i>
+                    </span>
+                    <h4 class="text-section">Admin</h4>
+                  </li>
+
+                  <li class="nav-item {{ Request::path() ==  'pegawai' ? 'active' : ''  }}">
+                    <a href="{{route('pegawai.index')}}">
+                        <i class="fas fa-users"></i>
+                        <p>Manajemen Pegawai</p>
+                    </a>
+                  </li>
+
+                  <li class="nav-item {{ Request::path() ==  'ruangan' ? 'active' : ''  }}">
+                    <a href="{{route('ruangan.index')}}">
+                        <i class="fas fa-th-list"></i>
+                        <p>Manajemen Ruangan</p>
+                    </a>
+                  </li>
+
+                  <li class="nav-item {{ Request::path() ==  'user' ? 'active' : ''  }}">
+                      <a href="{{route('user.index')}}">
+                          <i class="fas fa-users-cog"></i>
+                          <p>Manajemen Akun</p>
+                      </a>
+                  </li>
+                  @endif
+                @endif
 
             </ul>
           </div>
@@ -166,7 +150,7 @@
             <div class="logo-header" data-background-color="dark">
               <a href="index.html" class="logo">
                 <img
-                  src="{{asset('img/logo_blederan.png')}}"
+                  src="{{asset('img/logo_only.svg')}}"
                   alt="navbar brand"
                   class="navbar-brand"
                   height="20"
@@ -208,9 +192,13 @@
                       />
                     </div>
                     <span class="profile-username">
-                      <span class="op-7">Hi,</span>
+                      <span class="op-7">Hai,</span>
                       <span class="fw-bold">
+                        @if(Auth::check())
                         {{Auth::user()->nama}}
+                        @else
+                        {{'Tamu'}}
+                        @endif
                       </span>
                     </span>
                   </a>
@@ -227,10 +215,10 @@
                           </div>
                           <div class="u-text">
                             <h4>
-                              {{Auth::user()->nama}}
+                              @if(Auth::check()) {{Auth::user()->nama}} @else {{'Tamu'}} @endif
                             </h4>
                             <p class="text-muted">
-                              {{Auth::user()->role}}
+                              @if(Auth::check()) {{Auth::user()->role}} @else {{'Tamu'}} @endif
                             </p>
                             {{-- <a
                               href="profile.html"
@@ -243,7 +231,11 @@
                       <li>
 
                         <div class="dropdown-divider"></div>
+                        @if (Auth::check())
                         <a class="dropdown-item" href="{{route('logout')}}">Logout</a>
+                        @else
+                        <a class="dropdown-item" href="{{route('login')}}">Login</a>
+                        @endif
                       </li>
                     </div>
                   </ul>
@@ -328,6 +320,8 @@
     <script>
       $(document).ready(function () {
         $("#basic-datatables").DataTable({});
+        $("#basic-datatables-2").DataTable({});
+        $("#basic-datatables-3").DataTable({});
 
         $("#multi-filter-select").DataTable({
           pageLength: 5,

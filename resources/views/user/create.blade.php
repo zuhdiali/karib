@@ -61,7 +61,6 @@
                       <option value="">(Pilih salah satu)</option>
                       <option value="Admin" {{ old('role') == 'Admin' ? 'selected' : ''}}>Admin</option>
                       <option value="Penilai" {{old('role') == 'Penilai' ? 'selected' : ''}}>Penilai</option>
-                      <option value="User" {{old('role') == 'User' ? 'selected' : ''}}>User</option>
                     </select>
                     @if ($errors->has('role'))
                     <small class="form-text text-muted">{{ $errors->first('role') }}</small>

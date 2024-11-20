@@ -52,22 +52,25 @@
 
                                     <div class="form-group {{$errors->has("kebersihan") ? 'has-error has-feedback' : ''}}">
                                         <label for="kebersihan">
-                                            <strong>Kebersihan</strong>
+                                            <h3>Kebersihan</h3>
                                         </label>
                                         <ul>
                                             <li>Meja tidak berdebu</li>
                                             <li>Bersih dari sampah (kertas bekas, tisu, sisa makanan, dll)</li>
                                         </ul>
                                         <input
-                                            type="number"
+                                            type="range"
                                             min="0"
                                             max="10"
-                                            class="form-control"
+                                            class="form-range"
                                             id="kebersihan"
                                             placeholder="Masukkan nilai kebersihan (0-10)"
                                             name="kebersihan"
                                             value="{{ old("kebersihan") }}"
+                                            oninput="this.nextElementSibling.value = this.value"
                                         />
+                                        Nilai Kebersihan:
+                                        <output>{{ old("kebersihan") }}</output>
                                         @if ($errors->has("kebersihan"))
                                         <small class="form-text text-muted">{{ $errors->first("kebersihan") }}</small>
                                         @endif
@@ -78,22 +81,25 @@
 
                                     <div class="form-group {{$errors->has("keindahan") ? 'has-error has-feedback' : ''}}">
                                         <label for="keindahan">
-                                            <strong>Keindahan</strong>
+                                            <h3>Keindahan</h3>
                                         </label>
                                         <ul>
                                             <li>Penempatan hiasan meja (bunga/vas bunga, foto, dll)</li>
                                             <li>Seni penataan barang</li>
                                         </ul>
                                         <input
-                                            type="number"
+                                            type="range"
                                             min="0"
                                             max="10"
-                                            class="form-control"
+                                            class="form-range"
                                             id="keindahan"
                                             placeholder="Masukkan nilai keindahan (0-10)"
                                             name="keindahan"
                                             value="{{ old("keindahan") }}"
+                                            oninput="this.nextElementSibling.value = this.value"
                                         />
+                                        Nilai Keindahan:
+                                        <output>{{ old("keindahan") }}</output>
                                         @if ($errors->has("keindahan"))
                                         <small class="form-text text-muted">{{ $errors->first("keindahan") }}</small>
                                         @endif
@@ -102,7 +108,7 @@
 
                                     <div class="form-group {{$errors->has("kerapian") ? 'has-error has-feedback' : ''}}">
                                         <label for="kerapian">
-                                            <strong>Kerapian</strong>
+                                            <h3>Kerapian</h3>
                                         </label>
                                         <ul>
                                             <li>Kabel tersusun rapi</li>
@@ -113,15 +119,18 @@
                                             <li>Komputer (selain server) dalam kondisi mati pada jam pulang <strong>(jika dalam kondisi hidup, nilai kerapian maksimal 5)</strong></li>
                                         </ul>
                                         <input
-                                            type="number"
+                                            type="range"
                                             min="0"
                                             max="10"
-                                            class="form-control"
+                                            class="form-range"
                                             id="kerapian"
                                             placeholder="Masukkan nilai kerapian (0-10)"
                                             name="kerapian"
                                             value="{{ old("kerapian") }}"
+                                            oninput="this.nextElementSibling.value = this.value"
                                         />
+                                        Nilai Kerapian:
+                                        <output>{{ old("kerapian") }}</output>
                                         @if ($errors->has("kerapian"))
                                         <small class="form-text text-muted">{{ $errors->first("kerapian") }}</small>
                                         @endif

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PegawaiController;
+use App\Http\Controllers\RuanganController;
 use App\Http\Controllers\PenilaianController;
 use App\Http\Controllers\PenilaianRuanganController;
 
@@ -18,11 +19,11 @@ use App\Http\Controllers\PenilaianRuanganController;
 |
 */
 
+Route::get('/', [MainController::class, 'index'])->name('index');
 Route::get('/login', [MainController::class, 'login'])->name('login');
 Route::post('/login', [MainController::class, 'loginPost'])->name('login.post');
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/', [MainController::class, 'index'])->name('index');
     Route::get('/logout', [MainController::class, 'logout'])->name('logout');
 
     Route::prefix('user')->name('user.')->group(function () {
@@ -43,6 +44,15 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/destroy/{id}', [PegawaiController::class, 'destroy'])->name('destroy');
     });
 
+    Route::prefix('ruangan')->name('ruangan.')->group(function () {
+        Route::get('/', [RuanganController::class, 'index'])->name('index');
+        Route::get('/create', [RuanganController::class, 'create'])->name('create');
+        Route::post('/store', [RuanganController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [RuanganController::class, 'edit'])->name('edit');
+        Route::post('/update/{id}', [RuanganController::class, 'update'])->name('update');
+        Route::get('/destroy/{id}', [RuanganController::class, 'destroy'])->name('destroy');
+    });
+
     Route::prefix('penilaian')->name('penilaian.')->group(function () {
         Route::get('/', [PenilaianController::class, 'index'])->name('index');
         Route::get('/create', [PenilaianController::class, 'create'])->name('create');
@@ -50,6 +60,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/edit/{id}', [PenilaianController::class, 'edit'])->name('edit');
         Route::post('/update/{id}', [PenilaianController::class, 'update'])->name('update');
         Route::get('/destroy/{id}', [PenilaianController::class, 'destroy'])->name('destroy');
+        Route::post('/list-pegawai-belum-dinilai', [PenilaianController::class, 'pegawaiBelumDinilaiMingguTertentu'])->name('list-pegawai-belum-dinilai');
 
         Route::prefix('ruangan')->name('ruangan.')->group(function () {
             Route::get('/', [PenilaianRuanganController::class, 'index'])->name('index');

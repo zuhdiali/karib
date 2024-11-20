@@ -22,7 +22,6 @@ return new class extends Migration
             $table->tinyInteger('penampilan');
             $table->tinyInteger('total_nilai');
             $table->date('tanggal_awal_mingguan');
-            $table->date('tanggal_awal_triwulanan');
             $table->timestamps();
         });
     }

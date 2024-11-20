@@ -20,7 +20,6 @@ class Penilaian extends Model
         'kerapian',
         'penampilan',
         'total_nilai',
-        'tanggal_awal_mingguan',
-        'tanggal_awal_triwulanan'
+        'tanggal_awal_mingguan'
     ];
 }

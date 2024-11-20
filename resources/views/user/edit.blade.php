@@ -39,8 +39,8 @@
                                           name="username"
                                           placeholder="Masukkan username"
                                           value="@if(old('username')) {{ old('username') }} @else{{$user->username}}@endif"
-                                          {{-- Kepala BPS tidak bisa diubah usernamenya --}}
-                                          @if($user->id == 0) disabled @endif
+                                          {{-- Kepala BPS & Admin tidak bisa diubah usernamenya --}}
+                                          @if(($user->id == 0) || $user->id == 1) disabled @endif
                                         />
                                         @if ($errors->has('username'))
                                         <small class="form-text text-muted">{{$errors->first('username')}}</small>
@@ -56,8 +56,8 @@
                                             class="form-select"
                                             id="role"
                                             name="role"
-                                            {{-- Kepala BPS tidak bisa diubah rolenya --}}
-                                            @if($user->id == 0) disabled @endif
+                                            {{-- Kepala BPS & Admin tidak bisa diubah rolenya --}}
+                                            @if(($user->id == 0) || $user->id == 1) disabled @endif
                                         >
                                             <option value="">(Pilih salah satu)</option>
                                             <option value="Admin" {{ $user->role == 'Admin' ? 'selected' : ''}}>Admin</option>

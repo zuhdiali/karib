@@ -74,8 +74,7 @@ class PenilaianController extends Controller
             'kerapian' => $request->kerapian,
             'penampilan' => $request->penampilan,
             'total_nilai' => $request->kebersihan + $request->keindahan + $request->kerapian + $request->penampilan,
-            'tanggal_awal_mingguan' => Carbon::createFromFormat('Y-m-d', $request->tanggal_penilaian, 'Asia/Kuala_Lumpur')->startOfWeek()->format('Y-m-d'),
-            'tanggal_awal_triwulanan' =>  Carbon::createFromFormat('Y-m-d', $request->tanggal_penilaian, 'Asia/Kuala_Lumpur')->startOfQuarter()->format('Y-m-d'),
+            'tanggal_awal_mingguan' => Carbon::createFromFormat('Y-m-d', $request->tanggal_penilaian, 'Asia/Kuala_Lumpur')->startOfWeek()->format('Y-m-d')
         ]);
 
         if (!$penilaian->wasRecentlyCreated) {
@@ -89,22 +88,24 @@ class PenilaianController extends Controller
 
     public function show($id)
     {
-        if (Auth::user()->role != 'Penilai') {
+        $penilaian = Penilaian::find($id);
+
+        if ($penilaian->penilai != Auth::user()->id) {
             return redirect()->route('penilaian.index')
                 ->with('error', 'Anda tidak memiliki akses.');
         }
-        $penilaian = Penilaian::find($id);
+
         return view('penilaian.show', compact('penilaian'));
     }
 
     public function edit($id)
     {
-        if (Auth::user()->role != 'Penilai') {
+        $penilaian = Penilaian::find($id);
+        if ($penilaian->penilai != Auth::user()->id) {
             return redirect()->route('penilaian.index')
                 ->with('error', 'Anda tidak memiliki akses.');
         }
         $pegawais = Pegawai::get();
-        $penilaian = Penilaian::find($id);
         return view('penilaian.edit', compact('penilaian', 'pegawais'));
     }
 
@@ -133,25 +134,26 @@ class PenilaianController extends Controller
             'kerapian' => $request->kerapian,
             'penampilan' => $request->penampilan,
             'total_nilai' => $request->kebersihan + $request->keindahan + $request->kerapian + $request->penampilan,
-            'tanggal_awal_mingguan' => Carbon::createFromFormat('Y-m-d', $request->tanggal_penilaian, 'Asia/Kuala_Lumpur')->startOfWeek()->format('Y-m-d'),
-            'tanggal_awal_triwulanan' => Carbon::createFromFormat('Y-m-d', $request->tanggal_penilaian, 'Asia/Kuala_Lumpur')->startOfQuarter()->format('Y-m-d')
+            'tanggal_awal_mingguan' => Carbon::createFromFormat('Y-m-d', $request->tanggal_penilaian, 'Asia/Kuala_Lumpur')->startOfWeek()->format('Y-m-d')
         ]);
 
         return redirect()->route('penilaian.index')
-            ->with('success', 'Penilaian updated successfully.');
+            ->with('success', 'Penilaian berhasil diubah.');
     }
 
     public function destroy($id)
     {
-        if (Auth::user()->role != 'Penilai') {
+        $penilaian = Penilaian::find($id);
+
+        if ($penilaian->penilai != Auth::user()->id) {
             return redirect()->route('penilaian.index')
                 ->with('error', 'Anda tidak memiliki akses.');
         }
-        $penilaian = Penilaian::find($id);
+        
         $penilaian->delete();
 
         return redirect()->route('penilaian.index')
-            ->with('success', 'Penilaian deleted successfully.');
+            ->with('success', 'Penilaian berhasil dihapus.');
     }
 
     private function pegawaiBelumDinilaiMingguIni($id_penilai)
@@ -167,5 +169,21 @@ class PenilaianController extends Controller
             ->orderBy('pegawais.nama', 'asc')
             ->get();
         return $pegawais;
+    }
+
+    public function pegawaiBelumDinilaiMingguTertentu($id_penilai, $tanggal){
+        $tanggal_awal_mingguan = Carbon::createFromFormat('Y-m-d', $tanggal, 'Asia/Kuala_Lumpur')->startOfWeek()->format('Y-m-d');
+        $pegawais = DB::table('pegawais')
+        ->select('pegawais.*')
+        ->leftJoin('penilaians', function ($join) use ($id_penilai, $tanggal_awal_mingguan) {
+            $join->on('pegawais.id', '=', 'penilaians.pegawai_id')
+                ->where('penilaians.tanggal_awal_mingguan', '=', $tanggal_awal_mingguan)
+                ->where('penilaians.penilai', '=', $id_penilai);
+        })
+        ->whereNull('penilaians.id')
+        ->orderBy('pegawais.nama', 'asc')
+        ->get();
+        
+        return response()->json($pegawais);
     }
 }

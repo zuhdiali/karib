@@ -158,7 +158,7 @@
                           </div>
                           <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batalkan</button>
-                            <form action="{{url('penilaian.ruangan/destroy/'.$nilai->id)}}">
+                            <form action="{{url('penilaian/ruangan/destroy/'.$nilai->id)}}">
                               <button type="submit" class="btn btn-danger">Hapus Penilaian</button>
                             </form>
                           </div>
