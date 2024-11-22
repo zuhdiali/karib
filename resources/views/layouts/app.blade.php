@@ -354,7 +354,44 @@
               });
           },
         });
+        SessionSuccess.init();
       });
+      //== Class definition
+      var SessionSuccess = (function () {
+
+      return {
+        //== Init
+        init: function () {
+          @if(session('success'))
+            swal({
+              title: "Berhasil!",
+              text: "{{ session('success') }}",
+              type: "success",
+              buttons: {
+                confirm: {
+                  className: "btn btn-success",
+                },
+              },
+            });
+          @endif
+
+          @if(session('error'))
+            swal({
+              title: "Gagal!",
+              text: "{{ session('error') }}",
+              type: "error",
+              buttons: {
+                confirm: {
+                  className: "btn btn-danger",
+                },
+              },
+            });
+          @endif
+        },
+      };
+      })();
     </script>
+
+    @yield('script')
   </body>
 </html>

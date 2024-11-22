@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+<meta name="csrf-token" content="{{ csrf_token() }}">
 <div class="container">
     <div class="page-inner">
         <div class="row">
@@ -177,4 +178,43 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('script')
+<script>
+    $(document).ready(function(){
+        $("#tanggal_penilaian").change(function(){
+            // console.log($("#tanggal_penilaian").val());
+            console.log();
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                type: "POST",
+                url: "{{url('penilaian/list-pegawai-belum-dinilai')}}",
+                data: {
+                    id_penilai: {{Auth::user()->id}}, 
+                    tanggal: $("#tanggal_penilaian").val()
+                },
+                success: function(msg){
+                    console.log(msg);
+                },
+                error: function(msg){
+                    console.log(msg);
+                }
+
+            });
+        });
+    });
+
+    function afterText() {
+        console.log('afterText');
+
+    //   var txt1 = "<b>I </b>";           // Create element with HTML
+    //   var txt2 = $("<i></i>").text("love ");  // Create with jQuery
+    //   var txt3 = document.createElement("b");   // Create with DOM
+    //   txt3.innerHTML = "jQuery!";
+    //   $("img").after(txt1, txt2, txt3);    // Insert new elements after img
+    }
+</script>
 @endsection
