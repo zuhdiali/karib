@@ -165,4 +165,22 @@ class PenilaianRuanganController extends Controller
             ->get();
         return $ruangans;
     }
+
+    public function ruanganBelumDinilaiMingguTertentu(Request $request)
+    {
+        $id_penilai = $request->id_penilai;
+        $tanggal = $request->tanggal;
+        $tanggal_awal_mingguan = Carbon::createFromFormat('Y-m-d', $tanggal, 'Asia/Kuala_Lumpur')->startOfWeek()->format('Y-m-d');
+        $ruangans = DB::table('ruangans')
+        ->select('ruangans.*')
+        ->leftJoin('penilaian_ruangans', function ($join) use ($id_penilai, $tanggal_awal_mingguan) {
+            $join->on('ruangans.id', '=', 'penilaian_ruangans.ruangan_id')
+                ->where('penilaian_ruangans.tanggal_awal_mingguan', '=', $tanggal_awal_mingguan)
+                ->where('penilaian_ruangans.penilai', '=', $id_penilai);
+        })
+        ->whereNull('penilaian_ruangans.id')
+        ->orderBy('ruangans.nama', 'asc')
+        ->get();
+        return response()->json($ruangans);
+    }
 }

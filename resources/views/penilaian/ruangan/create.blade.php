@@ -1,5 +1,10 @@
 @extends('layouts.app')
 
+@section('meta')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+@endsection
+
+
 @section('content')
 <div class="container">
     <div class="page-inner">
@@ -147,4 +152,37 @@
         </div>
     </div>
 </div>
+@endsection
+@section('script')
+<script>
+    $(document).ready(function(){
+        $("#tanggal_penilaian").change(function(){
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                type: "POST",
+                url: "{{url('penilaian/ruangan/list-ruangan-belum-dinilai')}}",
+                data: {
+                    id_penilai: {{Auth::user()->id}}, 
+                    tanggal: $("#tanggal_penilaian").val()
+                },
+                success: function(msg){
+                    $("#ruangan_yang_dinilai").empty();
+                    $("#ruangan_yang_dinilai").append('<option>(Pilih salah satu)</option>');
+                    if(msg.length > 0){
+                        msg.forEach(function(p){
+                            $("#ruangan_yang_dinilai").append('<option value="'+p.id+'">'+p.nama+'</option>');
+                        });
+                    }
+
+                },
+                error: function(msg){
+                    console.log(msg);
+                }
+
+            });
+        });
+    });
+</script>
 @endsection

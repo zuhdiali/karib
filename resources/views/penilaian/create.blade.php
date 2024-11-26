@@ -1,7 +1,10 @@
 @extends('layouts.app')
 
+@section('meta')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+@endsection
+
 @section('content')
-<meta name="csrf-token" content="{{ csrf_token() }}">
 <div class="container">
     <div class="page-inner">
         <div class="row">
@@ -184,8 +187,6 @@
 <script>
     $(document).ready(function(){
         $("#tanggal_penilaian").change(function(){
-            // console.log($("#tanggal_penilaian").val());
-            console.log();
             $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -197,7 +198,14 @@
                     tanggal: $("#tanggal_penilaian").val()
                 },
                 success: function(msg){
-                    console.log(msg);
+                    $("#pegawai_yang_dinilai").empty();
+                    $("#pegawai_yang_dinilai").append('<option>(Pilih salah satu)</option>');
+                    if(msg.length > 0){
+                        msg.forEach(function(p){
+                            $("#pegawai_yang_dinilai").append('<option value="'+p.id+'">'+p.nama+'</option>');
+                        });
+                    }
+
                 },
                 error: function(msg){
                     console.log(msg);
@@ -206,15 +214,5 @@
             });
         });
     });
-
-    function afterText() {
-        console.log('afterText');
-
-    //   var txt1 = "<b>I </b>";           // Create element with HTML
-    //   var txt2 = $("<i></i>").text("love ");  // Create with jQuery
-    //   var txt3 = document.createElement("b");   // Create with DOM
-    //   txt3.innerHTML = "jQuery!";
-    //   $("img").after(txt1, txt2, txt3);    // Insert new elements after img
-    }
 </script>
 @endsection

@@ -40,6 +40,8 @@
 
     {{-- <!-- CSS Just for demo purpose, don't include it in your project -->
     <link rel="stylesheet" href="assets/css/demo.css" /> --}}
+
+    @yield('meta')
   </head>
   <body>
     <div class="wrapper">
@@ -77,11 +79,19 @@
                 <li class="nav-item {{ Request::path() ==  '/' ? 'active' : ''  }}">
                     <a href="{{route('index')}}">
                         <i class="fas fa-home"></i>
-                        <p>Beranda</p>
+                        <p>Progress Penilaian</p>
                     </a>
                 </li>
 
+                <li class="nav-item {{ Request::path() ==  'rekap' ? 'active' : ''  }}">
+                  <a href="{{route('rekap')}}">
+                      <i class="fas fa-clipboard-check"></i>
+                      <p>Rekap</p>
+                  </a>
+              </li>
+
                 @if(Auth::check())
+                  @if (Auth::user()->role == 'Penilai')
                   <li class="nav-section">
                     <span class="sidebar-mini-icon">
                       <i class="fa fa-ellipsis-h"></i>
@@ -104,6 +114,8 @@
                         <p>Ruangan</p>
                     </a>
                   </li>
+                  @endif
+                  
 
                   @if (Auth::user()->role == 'Admin')
                   
@@ -326,21 +338,23 @@
         $("#multi-filter-select").DataTable({
           pageLength: 5,
           initComplete: function () {
+            // Tambahkan baris filter di bawah header
+            $("#multi-filter-select thead").append('<tr></tr>');
+                var filterRow = $("#multi-filter-select thead tr").last();
+
             this.api()
               .columns()
               .every(function () {
                 var column = this;
-                var select = $(
-                  '<select class="form-select"><option value=""></option></select>'
-                )
-                  .appendTo($(column.footer()).empty())
-                  .on("change", function () {
-                    var val = $.fn.dataTable.util.escapeRegex($(this).val());
 
-                    column
-                      .search(val ? "^" + val + "$" : "", true, false)
-                      .draw();
-                  });
+                // Tambahkan dropdown filter ke setiap kolom di baris filter
+                var select = $('<select class="form-select"><option value=""></option></select>')
+                            .appendTo($("<th></th>").appendTo(filterRow))
+                            .on("change", function () {
+                                var val = $.fn.dataTable.util.escapeRegex($(this).val());
+
+                                column.search(val ? "^" + val + "$" : "", true, false).draw();
+                            });
 
                 column
                   .data()
@@ -354,41 +368,41 @@
               });
           },
         });
+
         SessionSuccess.init();
       });
       //== Class definition
       var SessionSuccess = (function () {
-
-      return {
-        //== Init
-        init: function () {
-          @if(session('success'))
-            swal({
-              title: "Berhasil!",
-              text: "{{ session('success') }}",
-              type: "success",
-              buttons: {
-                confirm: {
-                  className: "btn btn-success",
+        return {
+          //== Init
+          init: function () {
+            @if(session('success'))
+              swal({
+                title: "Berhasil!",
+                text: "{{ session('success') }}",
+                type: "success",
+                buttons: {
+                  confirm: {
+                    className: "btn btn-success",
+                  },
                 },
-              },
-            });
-          @endif
+              });
+            @endif
 
-          @if(session('error'))
-            swal({
-              title: "Gagal!",
-              text: "{{ session('error') }}",
-              type: "error",
-              buttons: {
-                confirm: {
-                  className: "btn btn-danger",
+            @if(session('error'))
+              swal({
+                title: "Gagal!",
+                text: "{{ session('error') }}",
+                type: "error",
+                buttons: {
+                  confirm: {
+                    className: "btn btn-danger",
+                  },
                 },
-              },
-            });
-          @endif
-        },
-      };
+              });
+            @endif
+          },
+        };
       })();
     </script>
 

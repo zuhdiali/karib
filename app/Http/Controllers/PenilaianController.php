@@ -172,7 +172,7 @@ class PenilaianController extends Controller
     }
 
     public function pegawaiBelumDinilaiMingguTertentu(Request $request){
-        $id_penilai = $request->id;
+        $id_penilai = $request->id_penilai;
         $tanggal = $request->tanggal;
         $tanggal_awal_mingguan = Carbon::createFromFormat('Y-m-d', $tanggal, 'Asia/Kuala_Lumpur')->startOfWeek()->format('Y-m-d');
         $pegawais = DB::table('pegawais')
@@ -185,7 +185,7 @@ class PenilaianController extends Controller
         ->whereNull('penilaians.id')
         ->orderBy('pegawais.nama', 'asc')
         ->get();
-        // dd($pegawais);
+        
         return response()->json($pegawais);
     }
 }

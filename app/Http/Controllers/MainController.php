@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class MainController extends Controller
 {
@@ -26,7 +27,40 @@ class MainController extends Controller
 
         // Membuat daftar filter untuk penilaian
         $filterMingguan = DB::table('penilaians')
-            ->select(DB::raw('DISTINCT YEAR(tanggal_penilaian) AS "Tahun", WEEK(tanggal_penilaian) AS "Minggu"'))
+            ->select(DB::raw('DISTINCT YEAR(tanggal_penilaian) AS "Tahun", WEEK(tanggal_penilaian, 1) AS "Minggu"'))
+            ->orderBy('Tahun', 'desc')
+            ->orderBy('Minggu', 'desc')
+            ->get();
+
+        $apakah_ada_penilaian = Penilaian::where('tanggal_awal_mingguan', $tanggal_awal_mingguan)->count();
+
+        // Progress penilaian 
+        $penilais = User::where('role', 'Penilai')->get();
+        $jumlah_pegawai = Pegawai::count();
+        $jumlah_ruangan = Ruangan::count();
+        foreach ($penilais as $penilai) {
+            $penilai->jumlah_penilaian = Penilaian::where('penilai', $penilai->id)->where('tanggal_awal_mingguan', $tanggal_awal_mingguan)->count();
+            $penilai->jumlah_penilaian_ruangan = PenilaianRuangan::where('penilai', $penilai->id)->where('tanggal_awal_mingguan', $tanggal_awal_mingguan)->count();
+        }
+
+        // dd($penilais);
+        return view('index', compact(
+            'filterMingguan',
+            'penilais', 
+            'jumlah_pegawai', 
+            'jumlah_ruangan',
+            'apakah_ada_penilaian'
+        ));
+    }
+
+    public function rekap()
+    {
+        $tanggal_awal_mingguan = Carbon::now()->startOfWeek()->format('Y-m-d');
+        $jumlah_pegawai = Pegawai::count();
+        $jumlah_ruangan = Ruangan::count();
+        // Membuat daftar filter untuk penilaian
+        $filterMingguan = DB::table('penilaians')
+            ->select(DB::raw('DISTINCT YEAR(tanggal_penilaian) AS "Tahun", WEEK(tanggal_penilaian, 1) AS "Minggu"'))
             ->orderBy('Tahun', 'desc')
             ->orderBy('Minggu', 'desc')
             ->get();
@@ -35,22 +69,22 @@ class MainController extends Controller
             ->orderBy('Tahun', 'desc')
             ->orderBy('Bulan', 'desc')
             ->get();
+            
         $filterTriwulanan = DB::table('penilaians')
             ->select(DB::raw('DISTINCT YEAR(tanggal_penilaian) AS "Tahun", QUARTER(tanggal_penilaian) AS "Triwulan"'))
             ->orderBy('Tahun', 'desc')
             ->orderBy('Triwulan', 'desc')
             ->get();
-            
 
         // Mengambil data penilaian pegawai
         $penilaians = DB::table('penilaians')
         ->select(
             'pegawai_id',
-            DB::raw('AVG(kebersihan) as "rerata_kebersihan"'),
-            DB::raw('AVG(kerapian) as "rerata_kerapian"'),
-            DB::raw('AVG(keindahan) as "rerata_keindahan"'),
-            DB::raw('AVG(penampilan) as "rerata_penampilan"'),
-            DB::raw('AVG(total_nilai) as "rerata_total_nilai"')
+            DB::raw('round(AVG(kebersihan),2) as "rerata_kebersihan"'),
+            DB::raw('round(AVG(kerapian),2) as "rerata_kerapian"'),
+            DB::raw('round(AVG(keindahan),2) as "rerata_keindahan"'),
+            DB::raw('round(AVG(penampilan),2) as "rerata_penampilan"'),
+            DB::raw('round(AVG(total_nilai),2) as "rerata_total_nilai"')
         )
         ->where('tanggal_awal_mingguan', $tanggal_awal_mingguan)
         ->groupBy('pegawai_id')
@@ -64,30 +98,60 @@ class MainController extends Controller
         $penilaian_ruangans = DB::table('penilaian_ruangans')
         ->select(
             'ruangan_id',
-            DB::raw('AVG(kebersihan) as "rerata_kebersihan"'),
-            DB::raw('AVG(kerapian) as "rerata_kerapian"'),
-            DB::raw('AVG(keindahan) as "rerata_keindahan"'),
-            DB::raw('AVG(total_nilai) as "rerata_total_nilai"')
+            DB::raw('round(AVG(kebersihan),2) as "rerata_kebersihan"'),
+            DB::raw('round(AVG(kerapian),2) as "rerata_kerapian"'),
+            DB::raw('round(AVG(keindahan),2) as "rerata_keindahan"'),
+            DB::raw('round(AVG(total_nilai),2) as "rerata_total_nilai"')
         )
+        ->where('penilai', '<>', 0)
         ->where('tanggal_awal_mingguan', $tanggal_awal_mingguan)
         ->groupBy('ruangan_id')
         ->get();
         
         foreach ($penilaian_ruangans as $ruangan) {
             $ruangan->ruangan = Ruangan::find($ruangan->ruangan_id);
+            
+            // penilaian Kepala BPS
+            $ruangan->penilaian_kepala_bps = PenilaianRuangan::where('ruangan_id', $ruangan->ruangan_id)
+                ->where('tanggal_awal_mingguan', $tanggal_awal_mingguan)
+                ->where('penilai', 0)
+                ->first();
+                // jika kepala BPS belum menilai pada minggu yang bersangkutan
+            if ($ruangan->penilaian_kepala_bps == null) {
+                $ruangan->penilaian_kepala_bps = new \stdClass();
+                $ruangan->penilaian_kepala_bps->total_nilai = 0;
+            }
+
+            // rerata penilaian pegawai dalam satu ruangan
+            $ruangan->rerata_pegawai = DB::table('penilaians')
+                ->join('pegawais', 'penilaians.pegawai_id', '=', 'pegawais.id')
+                ->select('pegawais.ruangan', DB::raw('round(AVG(penilaians.total_nilai),2) as rerata_nilai'))
+                ->where('penilaians.tanggal_awal_mingguan', '=', $tanggal_awal_mingguan)
+                ->where('pegawais.ruangan', '=', $ruangan->ruangan_id)
+                ->groupBy('pegawais.ruangan')
+                ->first();
+            
+            // jika dalam satu ruangan belum ada pegawai yang dinilai
+            if ($ruangan->rerata_pegawai == null) {
+                $ruangan->rerata_pegawai = new \stdClass();
+                $ruangan->rerata_pegawai->rerata_nilai = 0;
+            }
+            
+            
+            $ruangan->nilai_akhir = round($ruangan->rerata_total_nilai + $ruangan->penilaian_kepala_bps->total_nilai + $ruangan->rerata_pegawai->rerata_nilai,2);
         }
 
-        // Progress penilaian 
-        $penilais = User::where('role', 'Penilai')->get();
-        $jumlah_pegawai = Pegawai::count();
-        $jumlah_ruangan = Ruangan::count();
-        foreach ($penilais as $penilai) {
-            $penilai->jumlah_penilaian = Penilaian::where('penilai', $penilai->id)->where('tanggal_awal_mingguan', $tanggal_awal_mingguan)->count();
-            $penilai->jumlah_penilaian_ruangan = PenilaianRuangan::where('penilai', $penilai->id)->where('tanggal_awal_mingguan', $tanggal_awal_mingguan)->count();
-        }
 
         // dd($penilais);
-        return view('index', compact('penilaians', 'penilaian_ruangans','filterMingguan', 'filterBulanan', 'filterTriwulanan', 'penilais', 'jumlah_pegawai', 'jumlah_ruangan'));
+        return view('rekap', compact(
+            'penilaians', 
+            'penilaian_ruangans',
+            'filterMingguan', 
+            'filterBulanan', 
+            'filterTriwulanan',
+            'jumlah_pegawai', 
+            'jumlah_ruangan'
+        ));
     }
 
     public function login()
@@ -118,5 +182,314 @@ class MainController extends Controller
     {
         Auth::logout();
         return redirect()->route('login');
+    }
+    
+    // Fungsi filterMingguan digunakan untuk melihat progress penilaian pada minggu tertentu di halaman progress penilaian
+    public function filterMingguan(Request $request)
+    {
+        
+        $tanggal_awal_mingguan = $request->tanggal_awal_mingguan;
+
+        // Membuat daftar filter untuk penilaian
+        $filterMingguan = DB::table('penilaians')
+            ->select(DB::raw('DISTINCT YEAR(tanggal_penilaian) AS "Tahun", WEEK(tanggal_penilaian) AS "Minggu"'))
+            ->orderBy('Tahun', 'desc')
+            ->orderBy('Minggu', 'desc')
+            ->get();
+
+        // Mengambil data penilaian pegawai
+        $penilaians = DB::table('penilaians')
+        ->select(
+            'pegawai_id',
+            DB::raw('AVG(kebersihan) as "rerata_kebersihan"'),
+            DB::raw('AVG(kerapian) as "rerata_kerapian"'),
+            DB::raw('AVG(keindahan) as "rerata_keindahan"'),
+            DB::raw('AVG(penampilan) as "rerata_penampilan"'),
+            DB::raw('AVG(total_nilai) as "rerata_total_nilai"')
+        )
+        ->where('tanggal_awal_mingguan', $tanggal_awal_mingguan)
+        ->groupBy('pegawai_id')
+        ->get();
+        foreach ($penilaians as $penilaian) {
+            $penilaian->pegawai = Pegawai::find($penilaian->pegawai_id);
+        }
+
+        // Progress penilaian 
+        $penilais = User::where('role', 'Penilai')->get();
+        $jumlah_pegawai = Pegawai::count();
+        $jumlah_ruangan = Ruangan::count();
+        foreach ($penilais as $penilai) {
+            $id_penilai = $penilai->id;
+            $penilai->jumlah_penilaian = Penilaian::where('penilai', $penilai->id)->where('tanggal_awal_mingguan', $tanggal_awal_mingguan)->count();
+            $penilai->jumlah_penilaian_ruangan = PenilaianRuangan::where('penilai', $penilai->id)->where('tanggal_awal_mingguan', $tanggal_awal_mingguan)->count();
+            
+            // pegawai yang belum dinilai pada minggu tertentu
+            $penilai->pegawai_belum_dinilai =  DB::table('pegawais')
+            ->select('pegawais.*')
+            ->leftJoin('penilaians', function ($join) use ($id_penilai, $tanggal_awal_mingguan) {
+                $join->on('pegawais.id', '=', 'penilaians.pegawai_id')
+                    ->where('penilaians.tanggal_awal_mingguan', '=', $tanggal_awal_mingguan)
+                    ->where('penilaians.penilai', '=', $id_penilai);
+            })
+            ->whereNull('penilaians.id')
+            ->orderBy('pegawais.nama', 'asc')
+            ->get();
+        }
+
+        return response()->json([
+            'filterMingguan' => $filterMingguan,
+            'penilais' => $penilais,
+            'jumlah_pegawai' => $jumlah_pegawai,
+            'jumlah_ruangan' => $jumlah_ruangan,
+            'tanggal_awal_mingguan' => $tanggal_awal_mingguan
+        ]);
+    }
+
+    // Fungsi rekapMingguan digunakan untuk melihat rekap penilaian pada minggu tertentu di halaman rekap
+    public function rekapMingguan(Request $request)
+    {
+        // dd($request->all());
+        $tanggal_awal_mingguan = $request->tanggal_awal_mingguan;
+        
+        // Mengambil data penilaian pegawai
+        $penilaians = DB::table('penilaians')
+        ->select(
+            'pegawai_id',
+            DB::raw('round(AVG(kebersihan),2) as "rerata_kebersihan"'),
+            DB::raw('round(AVG(kerapian),2) as "rerata_kerapian"'),
+            DB::raw('round(AVG(keindahan),2) as "rerata_keindahan"'),
+            DB::raw('round(AVG(penampilan),2) as "rerata_penampilan"'),
+            DB::raw('round(AVG(total_nilai),2) as "rerata_total_nilai"')
+        )
+        ->where('tanggal_awal_mingguan', $tanggal_awal_mingguan)
+        ->groupBy('pegawai_id')
+        ->get();
+        foreach ($penilaians as $penilaian) {
+            $penilaian->pegawai = Pegawai::find($penilaian->pegawai_id);
+        }
+
+        // Mengambil data penilaian ruangan
+        $penilaian_ruangans = DB::table('penilaian_ruangans')
+        ->select(
+            'ruangan_id',
+            DB::raw('round(AVG(kebersihan),2) as "rerata_kebersihan"'),
+            DB::raw('round(AVG(kerapian),2) as "rerata_kerapian"'),
+            DB::raw('round(AVG(keindahan),2) as "rerata_keindahan"'),
+            DB::raw('round(AVG(total_nilai),2) as "rerata_total_nilai"')
+        )
+        ->where('tanggal_awal_mingguan', $tanggal_awal_mingguan)
+        ->where('penilai', '<>', 0)
+        ->groupBy('ruangan_id')
+        ->get();
+        
+        foreach ($penilaian_ruangans as $ruangan) {
+            $ruangan->ruangan = Ruangan::find($ruangan->ruangan_id);
+            
+            // penilaian Kepala BPS
+            $ruangan->penilaian_kepala_bps = PenilaianRuangan::where('ruangan_id', $ruangan->ruangan_id)
+                ->where('tanggal_awal_mingguan', $tanggal_awal_mingguan)
+                ->where('penilai', 0)
+                ->first();
+                // jika kepala BPS belum menilai pada minggu yang bersangkutan
+            if ($ruangan->penilaian_kepala_bps == null) {
+                $ruangan->penilaian_kepala_bps = new \stdClass();
+                $ruangan->penilaian_kepala_bps->total_nilai = 0;
+            }
+
+            // rerata penilaian pegawai dalam satu ruangan
+            $ruangan->rerata_pegawai = DB::table('penilaians')
+                ->join('pegawais', 'penilaians.pegawai_id', '=', 'pegawais.id')
+                ->select('pegawais.ruangan', DB::raw('round(AVG(penilaians.total_nilai),2) as rerata_nilai'))
+                ->where('penilaians.tanggal_awal_mingguan', '=', $tanggal_awal_mingguan)
+                ->where('pegawais.ruangan', '=', $ruangan->ruangan_id)
+                ->groupBy('pegawais.ruangan')
+                ->first();
+            
+            // jika dalam satu ruangan belum ada pegawai yang dinilai
+            if ($ruangan->rerata_pegawai == null) {
+                $ruangan->rerata_pegawai = new \stdClass();
+                $ruangan->rerata_pegawai->rerata_nilai = 0;
+            }
+            
+            
+            $ruangan->nilai_akhir = round($ruangan->rerata_total_nilai + $ruangan->penilaian_kepala_bps->total_nilai + $ruangan->rerata_pegawai->rerata_nilai,2);
+        }
+
+        return response()->json([
+            'penilaians' => $penilaians, 
+            'penilaian_ruangans' => $penilaian_ruangans,
+            'tanggal_awal_mingguan' => $tanggal_awal_mingguan
+        ]);
+    }
+
+    // Fungsi rekapBulanan digunakan untuk melihat rekap penilaian pada bulan tertentu di halaman rekap
+    public function rekapBulanan(Request $request)
+    {
+        $tanggal_awal_bulanan = $request->tanggal_awal_bulanan;
+        $tanggal_akhir_bulanan = Carbon::parse($tanggal_awal_bulanan)
+        ->endOfMonth()->format('Y-m-d');
+
+        // Mengambil data penilaian pegawai
+        $penilaians = DB::table('penilaians')
+        ->select(
+            'pegawai_id',
+            DB::raw('round(AVG(kebersihan),2) as "rerata_kebersihan"'),
+            DB::raw('round(AVG(kerapian),2) as "rerata_kerapian"'),
+            DB::raw('round(AVG(keindahan),2) as "rerata_keindahan"'),
+            DB::raw('round(AVG(penampilan),2) as "rerata_penampilan"'),
+            DB::raw('round(AVG(total_nilai),2) as "rerata_total_nilai"')
+        )
+        ->where('tanggal_penilaian', '>=', $tanggal_awal_bulanan)
+        ->where('tanggal_penilaian', '<=', $tanggal_akhir_bulanan)
+        ->groupBy('pegawai_id')
+        ->get();
+        foreach ($penilaians as $penilaian) {
+            $penilaian->pegawai = Pegawai::find($penilaian->pegawai_id);
+        }
+
+        // Mengambil data penilaian ruangan
+        $penilaian_ruangans = DB::table('penilaian_ruangans')
+        ->select(
+            'ruangan_id',
+            DB::raw('round(AVG(kebersihan),2) as "rerata_kebersihan"'),
+            DB::raw('round(AVG(kerapian),2) as "rerata_kerapian"'),
+            DB::raw('round(AVG(keindahan),2) as "rerata_keindahan"'),
+            DB::raw('round(AVG(total_nilai),2) as "rerata_total_nilai"')
+        )
+        ->where('tanggal_penilaian', '>=', $tanggal_awal_bulanan)
+        ->where('tanggal_penilaian', '<=', $tanggal_akhir_bulanan)
+        ->where('penilai', '<>', 0)
+        ->groupBy('ruangan_id')
+        ->get();
+        
+        foreach ($penilaian_ruangans as $ruangan) {
+            $ruangan->ruangan = Ruangan::find($ruangan->ruangan_id);
+            
+            // Lakukan query untuk menghitung rata-rata total_nilai dari kepala BPS
+            $penilaian_kepala_bps = DB::table('penilaian_ruangans')
+            ->where('penilai', 0)
+            ->whereBetween('tanggal_penilaian', [$tanggal_awal_bulanan, $tanggal_akhir_bulanan])
+            ->where('ruangan_id', $ruangan->ruangan_id)
+            ->select(DB::raw('round(avg(total_nilai), 2) as total_nilai'))
+            ->first()->total_nilai;
+
+            // jika kepala BPS belum menilai pada minggu yang bersangkutan
+            if ($penilaian_kepala_bps == null) {
+                $ruangan->penilaian_kepala_bps = new \stdClass();
+                $ruangan->penilaian_kepala_bps->total_nilai = 0;
+            } else {
+                // Simpan hasil rata-rata ke dalam properti dinamis $ruangan->penilaian_kepala_bps
+                $ruangan->penilaian_kepala_bps = (object) ['total_nilai' => $penilaian_kepala_bps];
+            }
+
+            // rerata penilaian pegawai dalam satu ruangan
+            $ruangan->rerata_pegawai = DB::table('penilaians')
+                ->join('pegawais', 'penilaians.pegawai_id', '=', 'pegawais.id')
+                ->select('pegawais.ruangan', DB::raw('round(AVG(penilaians.total_nilai),2) as rerata_nilai'))
+                ->where('penilaians.tanggal_penilaian', '>=', $tanggal_awal_bulanan)
+                ->where('penilaians.tanggal_penilaian', '<=', $tanggal_akhir_bulanan)
+                ->where('pegawais.ruangan', '=', $ruangan->ruangan_id)
+                ->groupBy('pegawais.ruangan')
+                ->first();
+            // jika dalam satu ruangan belum ada pegawai yang dinilai
+            if ($ruangan->rerata_pegawai == null) {
+                $ruangan->rerata_pegawai = new \stdClass();
+                $ruangan->rerata_pegawai->rerata_nilai = 0;
+            }
+
+            $ruangan->nilai_akhir = round($ruangan->rerata_total_nilai + $ruangan->penilaian_kepala_bps->total_nilai + $ruangan->rerata_pegawai->rerata_nilai,2);
+        }
+
+        return response()->json([
+            'penilaians' => $penilaians, 
+            'penilaian_ruangans' => $penilaian_ruangans,
+            'tanggal_awal_bulanan' => $tanggal_awal_bulanan
+        ]);
+    }
+
+    // Fungsi rekapTriwulan digunakan untuk melihat rekap penilaian pada triwulan tertentu di halaman rekap
+    public function rekapTriwulan(Request $request)
+    {
+        $tanggal_awal_triwulanan = $request->tanggal_awal_triwulan;
+        $tanggal_akhir_triwulanan = Carbon::parse($tanggal_awal_triwulanan)
+        ->addMonths(3)->subDays(1)->format('Y-m-d');
+
+        // Mengambil data penilaian pegawai
+        $penilaians = DB::table('penilaians')
+        ->select(
+            'pegawai_id',
+            DB::raw('round(AVG(kebersihan),2) as "rerata_kebersihan"'),
+            DB::raw('round(AVG(kerapian),2) as "rerata_kerapian"'),
+            DB::raw('round(AVG(keindahan),2) as "rerata_keindahan"'),
+            DB::raw('round(AVG(penampilan),2) as "rerata_penampilan"'),
+            DB::raw('round(AVG(total_nilai),2) as "rerata_total_nilai"')
+        )
+        ->where('tanggal_penilaian', '>=', $tanggal_awal_triwulanan)
+        ->where('tanggal_penilaian', '<=', $tanggal_akhir_triwulanan)
+        ->groupBy('pegawai_id')
+        ->get();
+        foreach ($penilaians as $penilaian) {
+            $penilaian->pegawai = Pegawai::find($penilaian->pegawai_id);
+        }
+
+        // Mengambil data penilaian ruangan
+        $penilaian_ruangans = DB::table('penilaian_ruangans')
+        ->select(
+            'ruangan_id',
+            DB::raw('round(AVG(kebersihan),2) as "rerata_kebersihan"'),
+            DB::raw('round(AVG(kerapian),2) as "rerata_kerapian"'),
+            DB::raw('round(AVG(keindahan),2) as "rerata_keindahan"'),
+            DB::raw('round(AVG(total_nilai),2) as "rerata_total_nilai"')
+        )
+        ->where('tanggal_penilaian', '>=', $tanggal_awal_triwulanan)
+        ->where('tanggal_penilaian', '<=', $tanggal_akhir_triwulanan)
+        ->where('penilai', '<>', 0)
+        ->groupBy('ruangan_id')
+        ->get();
+
+        foreach ($penilaian_ruangans as $ruangan) {
+            $ruangan->ruangan = Ruangan::find($ruangan->ruangan_id);
+            
+            // Lakukan query untuk menghitung rata-rata total_nilai dari kepala BPS
+            $penilaian_kepala_bps = DB::table('penilaian_ruangans')
+            ->where('penilai', 0)
+            ->whereBetween('tanggal_penilaian', [$tanggal_awal_triwulanan, $tanggal_akhir_triwulanan])
+            ->where('ruangan_id', $ruangan->ruangan_id)
+            ->select(DB::raw('round(avg(total_nilai), 2) as total_nilai'))
+            ->first()->total_nilai;
+
+            // jika kepala BPS belum menilai pada minggu yang bersangkutan
+            if ($penilaian_kepala_bps == null) {
+                $ruangan->penilaian_kepala_bps = new \stdClass();
+                $ruangan->penilaian_kepala_bps->total_nilai = 0;
+            } else {
+                // Simpan hasil rata-rata ke dalam properti dinamis $ruangan->penilaian_kepala_bps
+                $ruangan->penilaian_kepala_bps = (object) ['total_nilai' => $penilaian_kepala_bps];
+            }
+
+            // rerata penilaian pegawai dalam satu ruangan
+            $ruangan->rerata_pegawai = DB::table('penilaians')
+                ->join('pegawais', 'penilaians.pegawai_id', '=', 'pegawais.id')
+                ->select('pegawais.ruangan', DB::raw('round(AVG(penilaians.total_nilai),2) as rerata_nilai'))
+                ->where('penilaians.tanggal_penilaian', '>=', $tanggal_awal_triwulanan)
+                ->where('penilaians.tanggal_penilaian', '<=', $tanggal_akhir_triwulanan)
+                ->where('pegawais.ruangan', '=', $ruangan->ruangan_id)
+                ->groupBy('pegawais.ruangan')
+                ->first();
+
+            // jika dalam satu ruangan belum ada pegawai yang dinilai
+            if ($ruangan->rerata_pegawai == null) {
+                $ruangan->rerata_pegawai = new \stdClass();
+                $ruangan->rerata_pegawai->rerata_nilai = 0;
+            }
+
+            $ruangan->nilai_akhir = round($ruangan->rerata_total_nilai + $ruangan->penilaian_kepala_bps->total_nilai + $ruangan->rerata_pegawai->rerata_nilai,2);
+        }
+
+        return response()->json([
+            'penilaians' => $penilaians, 
+            'penilaian_ruangans' => $penilaian_ruangans,
+            'tanggal_awal_triwulanan' => $tanggal_awal_triwulanan
+        ]);
     }
 }
