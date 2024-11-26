@@ -199,7 +199,7 @@
                 },
                 success: function(msg){
                     $("#pegawai_yang_dinilai").empty();
-                    $("#pegawai_yang_dinilai").append('<option>(Pilih salah satu)</option>');
+                    $("#pegawai_yang_dinilai").append('<option value="">(Pilih salah satu)</option>');
                     if(msg.length > 0){
                         msg.forEach(function(p){
                             $("#pegawai_yang_dinilai").append('<option value="'+p.id+'">'+p.nama+'</option>');

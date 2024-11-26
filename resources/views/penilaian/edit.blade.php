@@ -24,6 +24,7 @@
                                             name="tanggal_penilaian"
                                             placeholder="Masukkan username"
                                             value="{{ old("tanggal_penilaian") ? old("tanggal_penilaian") : $penilaian->tanggal_penilaian }}"
+                                            disabled
                                         />
                                         @if ($errors->has("tanggal_penilaian"))
                                         <small class="form-text text-muted">{{ $errors->first("tanggal_penilaian") }}</small>
@@ -39,6 +40,7 @@
                                             class="form-select"
                                             id="pegawai_yang_dinilai"
                                             name="pegawai_yang_dinilai"
+                                            disabled
                                         >
                                             <option value="">(Pilih salah satu)</option>
                                             @foreach ($pegawais as $item)
