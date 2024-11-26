@@ -45,9 +45,8 @@
                             @endif
                             @endforeach
                         </select>
-                        {{-- <button type="submit" class="btn btn-primary mt-3">Filter</button> --}}
                       </div>
-                    </form>
+                      <hr />
                   </div>
                   <div class="tab-pane fade" id="pills-profile-nobd" role="tabpanel" aria-labelledby="pills-profile-tab-nobd">
                     <div class="form-group">
@@ -78,6 +77,11 @@
                     </div>
                   </div>
                 </div>
+                <h5>Juara Ruangan: <strong class="juara_ruangan_mingguan_nama">{{$nilai_ruang_tinggi_nama}}</strong></h5>
+                <h5>Nilai: <strong class="juara_ruangan_mingguan">{{$nilai_ruang_tinggi}}</strong></h5>
+                <hr />
+                <h5>Juara Pegawai: <strong class="juara_pegawai_mingguan_nama">{{$nilai_pegawai_tinggi_nama}}</strong></h5>
+                <h5>Nilai: <strong class="juara_pegawai_mingguan">{{$nilai_pegawai_tinggi}}</strong></h5>
               </div>
             </div>
           </div>
@@ -237,6 +241,14 @@
                 tableIds.forEach((id) => {
                     $(id).DataTable({});
                 });
+
+                // Update juara ruangan
+                $(".juara_ruangan_mingguan_nama ").text(`${msg.nilai_ruang_tinggi_nama}`);
+                $(".juara_ruangan_mingguan ").text(`${msg.nilai_ruang_tinggi}`);
+
+                // Update juara pegawai
+                $(".juara_pegawai_mingguan_nama ").text(`${msg.nilai_pegawai_tinggi_nama}`);
+                $(".juara_pegawai_mingguan ").text(`${msg.nilai_pegawai_tinggi}`);
             },
             error: function (msg) {
                 console.log(msg);
@@ -304,6 +316,14 @@
           tableIds.forEach((id) => {
             $(id).DataTable({});
           });
+
+          // Update juara ruangan
+          $(".juara_ruangan_mingguan_nama ").text(`${msg.nilai_ruang_tinggi_nama}`);
+          $(".juara_ruangan_mingguan ").text(`${msg.nilai_ruang_tinggi}`);
+
+          // Update juara pegawai
+          $(".juara_pegawai_mingguan_nama ").text(`${msg.nilai_pegawai_tinggi_nama}`);
+          $(".juara_pegawai_mingguan ").text(`${msg.nilai_pegawai_tinggi}`);
         },
         error: function (msg) {
           console.log(msg);
@@ -371,6 +391,14 @@
           tableIds.forEach((id) => {
             $(id).DataTable({});
           });
+
+          // Update juara ruangan
+          $(".juara_ruangan_mingguan_nama ").text(`${msg.nilai_ruang_tinggi_nama}`);
+          $(".juara_ruangan_mingguan ").text(`${msg.nilai_ruang_tinggi}`);
+
+          // Update juara pegawai
+          $(".juara_pegawai_mingguan_nama ").text(`${msg.nilai_pegawai_tinggi_nama}`);
+          $(".juara_pegawai_mingguan ").text(`${msg.nilai_pegawai_tinggi}`);
         },
         error: function (msg) {
           console.log(msg);

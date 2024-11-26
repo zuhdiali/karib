@@ -76,6 +76,10 @@ class MainController extends Controller
             ->orderBy('Triwulan', 'desc')
             ->get();
 
+        // flag untuk mencari pegawai dengan nilai tertinggi
+        $nilai_pegawai_tinggi = 0;
+        $nilai_pegawai_tinggi_nama = "";
+
         // Mengambil data penilaian pegawai
         $penilaians = DB::table('penilaians')
         ->select(
@@ -91,6 +95,10 @@ class MainController extends Controller
         ->get();
         foreach ($penilaians as $penilaian) {
             $penilaian->pegawai = Pegawai::find($penilaian->pegawai_id);
+            if($penilaian->rerata_total_nilai > $nilai_pegawai_tinggi){
+                $nilai_pegawai_tinggi = $penilaian->rerata_total_nilai;
+                $nilai_pegawai_tinggi_nama = $penilaian->pegawai->nama;
+            }
         }
         
 
@@ -108,6 +116,10 @@ class MainController extends Controller
         ->groupBy('ruangan_id')
         ->get();
         
+        // flag untuk mencari ruangan dengan nilai tertinggi
+        $nilai_ruang_tinggi_nama = "";
+        $nilai_ruang_tinggi = 0;
+
         foreach ($penilaian_ruangans as $ruangan) {
             $ruangan->ruangan = Ruangan::find($ruangan->ruangan_id);
             
@@ -139,6 +151,10 @@ class MainController extends Controller
             
             
             $ruangan->nilai_akhir = round($ruangan->rerata_total_nilai + $ruangan->penilaian_kepala_bps->total_nilai + $ruangan->rerata_pegawai->rerata_nilai,2);
+            if($ruangan->nilai_akhir > $nilai_ruang_tinggi){
+                $nilai_ruang_tinggi = $ruangan->nilai_akhir;
+                $nilai_ruang_tinggi_nama = $ruangan->ruangan->nama;
+            }
         }
 
 
@@ -150,7 +166,11 @@ class MainController extends Controller
             'filterBulanan', 
             'filterTriwulanan',
             'jumlah_pegawai', 
-            'jumlah_ruangan'
+            'jumlah_ruangan',
+            'nilai_ruang_tinggi',
+            'nilai_ruang_tinggi_nama',
+            'nilai_pegawai_tinggi',
+            'nilai_pegawai_tinggi_nama'
         ));
     }
 
@@ -251,6 +271,10 @@ class MainController extends Controller
         // dd($request->all());
         $tanggal_awal_mingguan = $request->tanggal_awal_mingguan;
         
+        // flag untuk mencari nilai tertinggi pegawai
+        $nilai_pegawai_tinggi = 0;
+        $nilai_pegawai_tinggi_nama = "";
+        
         // Mengambil data penilaian pegawai
         $penilaians = DB::table('penilaians')
         ->select(
@@ -266,6 +290,10 @@ class MainController extends Controller
         ->get();
         foreach ($penilaians as $penilaian) {
             $penilaian->pegawai = Pegawai::find($penilaian->pegawai_id);
+            if($penilaian->rerata_total_nilai > $nilai_pegawai_tinggi){
+                $nilai_pegawai_tinggi = $penilaian->rerata_total_nilai;
+                $nilai_pegawai_tinggi_nama = $penilaian->pegawai->nama;
+            }
         }
 
         // Mengambil data penilaian ruangan
@@ -282,6 +310,10 @@ class MainController extends Controller
         ->groupBy('ruangan_id')
         ->get();
         
+        #flag untuk mencari nilai tertinggi
+        $nilai_ruang_tinggi_nama = "";
+        $nilai_ruang_tinggi = 0;
+
         foreach ($penilaian_ruangans as $ruangan) {
             $ruangan->ruangan = Ruangan::find($ruangan->ruangan_id);
             
@@ -313,12 +345,20 @@ class MainController extends Controller
             
             
             $ruangan->nilai_akhir = round($ruangan->rerata_total_nilai + $ruangan->penilaian_kepala_bps->total_nilai + $ruangan->rerata_pegawai->rerata_nilai,2);
+            if($ruangan->nilai_akhir > $nilai_ruang_tinggi){
+                $nilai_ruang_tinggi = $ruangan->nilai_akhir;
+                $nilai_ruang_tinggi_nama = $ruangan->ruangan->nama;
+            }
         }
 
         return response()->json([
             'penilaians' => $penilaians, 
             'penilaian_ruangans' => $penilaian_ruangans,
-            'tanggal_awal_mingguan' => $tanggal_awal_mingguan
+            'tanggal_awal_mingguan' => $tanggal_awal_mingguan,
+            'nilai_ruang_tinggi' => $nilai_ruang_tinggi,
+            'nilai_ruang_tinggi_nama' => $nilai_ruang_tinggi_nama,
+            'nilai_pegawai_tinggi' => $nilai_pegawai_tinggi,
+            'nilai_pegawai_tinggi_nama' => $nilai_pegawai_tinggi_nama
         ]);
     }
 
@@ -328,6 +368,10 @@ class MainController extends Controller
         $tanggal_awal_bulanan = $request->tanggal_awal_bulanan;
         $tanggal_akhir_bulanan = Carbon::parse($tanggal_awal_bulanan)
         ->endOfMonth()->format('Y-m-d');
+
+        // flag untuk mencari nilai tertinggi pegawai
+        $nilai_pegawai_tinggi = 0;
+        $nilai_pegawai_tinggi_nama = "";
 
         // Mengambil data penilaian pegawai
         $penilaians = DB::table('penilaians')
@@ -345,6 +389,10 @@ class MainController extends Controller
         ->get();
         foreach ($penilaians as $penilaian) {
             $penilaian->pegawai = Pegawai::find($penilaian->pegawai_id);
+            if($penilaian->rerata_total_nilai > $nilai_pegawai_tinggi){
+                $nilai_pegawai_tinggi = $penilaian->rerata_total_nilai;
+                $nilai_pegawai_tinggi_nama = $penilaian->pegawai->nama;
+            }
         }
 
         // Mengambil data penilaian ruangan
@@ -361,6 +409,10 @@ class MainController extends Controller
         ->where('penilai', '<>', 0)
         ->groupBy('ruangan_id')
         ->get();
+
+        #flag untuk mencari nilai tertinggi
+        $nilai_ruang_tinggi_nama = "";
+        $nilai_ruang_tinggi = 0;
         
         foreach ($penilaian_ruangans as $ruangan) {
             $ruangan->ruangan = Ruangan::find($ruangan->ruangan_id);
@@ -398,12 +450,21 @@ class MainController extends Controller
             }
 
             $ruangan->nilai_akhir = round($ruangan->rerata_total_nilai + $ruangan->penilaian_kepala_bps->total_nilai + $ruangan->rerata_pegawai->rerata_nilai,2);
+
+            if($ruangan->nilai_akhir > $nilai_ruang_tinggi){
+                $nilai_ruang_tinggi = $ruangan->nilai_akhir;
+                $nilai_ruang_tinggi_nama = $ruangan->ruangan->nama;
+            }
         }
 
         return response()->json([
             'penilaians' => $penilaians, 
             'penilaian_ruangans' => $penilaian_ruangans,
-            'tanggal_awal_bulanan' => $tanggal_awal_bulanan
+            'tanggal_awal_bulanan' => $tanggal_awal_bulanan,
+            'nilai_ruang_tinggi' => $nilai_ruang_tinggi,
+            'nilai_ruang_tinggi_nama' => $nilai_ruang_tinggi_nama,
+            'nilai_pegawai_tinggi' => $nilai_pegawai_tinggi,
+            'nilai_pegawai_tinggi_nama' => $nilai_pegawai_tinggi_nama
         ]);
     }
 
@@ -413,6 +474,10 @@ class MainController extends Controller
         $tanggal_awal_triwulanan = $request->tanggal_awal_triwulan;
         $tanggal_akhir_triwulanan = Carbon::parse($tanggal_awal_triwulanan)
         ->addMonths(3)->subDays(1)->format('Y-m-d');
+
+        // flag untuk mengambil nilai tertinggi pegawai
+        $nilai_pegawai_tinggi = 0;
+        $nilai_pegawai_tinggi_nama = "";
 
         // Mengambil data penilaian pegawai
         $penilaians = DB::table('penilaians')
@@ -430,6 +495,10 @@ class MainController extends Controller
         ->get();
         foreach ($penilaians as $penilaian) {
             $penilaian->pegawai = Pegawai::find($penilaian->pegawai_id);
+            if($penilaian->rerata_total_nilai > $nilai_pegawai_tinggi){
+                $nilai_pegawai_tinggi = $penilaian->rerata_total_nilai;
+                $nilai_pegawai_tinggi_nama = $penilaian->pegawai->nama;
+            }
         }
 
         // Mengambil data penilaian ruangan
@@ -446,6 +515,10 @@ class MainController extends Controller
         ->where('penilai', '<>', 0)
         ->groupBy('ruangan_id')
         ->get();
+
+        #flag untuk mencari nilai tertinggi
+        $nilai_ruang_tinggi_nama = "";
+        $nilai_ruang_tinggi = 0;
 
         foreach ($penilaian_ruangans as $ruangan) {
             $ruangan->ruangan = Ruangan::find($ruangan->ruangan_id);
@@ -484,12 +557,21 @@ class MainController extends Controller
             }
 
             $ruangan->nilai_akhir = round($ruangan->rerata_total_nilai + $ruangan->penilaian_kepala_bps->total_nilai + $ruangan->rerata_pegawai->rerata_nilai,2);
+
+            if($ruangan->nilai_akhir > $nilai_ruang_tinggi){
+                $nilai_ruang_tinggi = $ruangan->nilai_akhir;
+                $nilai_ruang_tinggi_nama = $ruangan->ruangan->nama;
+            }
         }
 
         return response()->json([
             'penilaians' => $penilaians, 
             'penilaian_ruangans' => $penilaian_ruangans,
-            'tanggal_awal_triwulanan' => $tanggal_awal_triwulanan
+            'tanggal_awal_triwulanan' => $tanggal_awal_triwulanan,
+            'nilai_ruang_tinggi' => $nilai_ruang_tinggi,
+            'nilai_ruang_tinggi_nama' => $nilai_ruang_tinggi_nama,
+            'nilai_pegawai_tinggi' => $nilai_pegawai_tinggi,
+            'nilai_pegawai_tinggi_nama' => $nilai_pegawai_tinggi_nama
         ]);
     }
 }
