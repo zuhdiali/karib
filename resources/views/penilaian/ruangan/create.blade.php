@@ -169,7 +169,7 @@
                 },
                 success: function(msg){
                     $("#ruangan_yang_dinilai").empty();
-                    $("#ruangan_yang_dinilai").append('<option>(Pilih salah satu)</option>');
+                    $("#ruangan_yang_dinilai").append('<option value = "">(Pilih salah satu)</option>');
                     if(msg.length > 0){
                         msg.forEach(function(p){
                             $("#ruangan_yang_dinilai").append('<option value="'+p.id+'">'+p.nama+'</option>');

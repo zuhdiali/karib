@@ -65,6 +65,16 @@ class PenilaianController extends Controller
             'penampilan' => 'required|integer|min:0|max:10',
         ]);
 
+        $tanggal_awal_mingguan = Carbon::createFromFormat('Y-m-d', $request->tanggal_penilaian, 'Asia/Kuala_Lumpur')->startOfWeek()->format('Y-m-d');
+
+        if (Penilaian::where([
+            ['tanggal_awal_mingguan', '=', $tanggal_awal_mingguan],
+            ['penilai', '=', Auth::user()->id],
+            ['pegawai_id', '=', $request->pegawai_yang_dinilai]
+        ])->exists()) {
+            return redirect()->route('penilaian.index')
+                ->with('error', 'Pegawai tersebut sudah dinilai pada minggu yang dipilih. Silakan ulangi penilaian!');
+        }
         $penilaian = Penilaian::create([
             'penilai' => Auth::user()->id,
             'pegawai_id' => (int) $request->pegawai_yang_dinilai,
@@ -116,8 +126,6 @@ class PenilaianController extends Controller
                 ->with('error', 'Anda tidak memiliki akses.');
         }
         $request->validate([
-            'pegawai_yang_dinilai' => 'required|integer',
-            'tanggal_penilaian' => 'required|date',
             'kebersihan' => 'required|integer|min:0|max:10',
             'keindahan' => 'required|integer|min:0|max:10',
             'kerapian' => 'required|integer|min:0|max:10',
@@ -127,14 +135,11 @@ class PenilaianController extends Controller
         $penilaian = Penilaian::find($id);
         $penilaian->update([
             'penilai' => Auth::user()->id,
-            'pegawai_id' => $request->pegawai_yang_dinilai,
-            'tanggal_penilaian' => $request->tanggal_penilaian,
             'kebersihan' => $request->kebersihan,
             'keindahan' => $request->keindahan,
             'kerapian' => $request->kerapian,
             'penampilan' => $request->penampilan,
-            'total_nilai' => $request->kebersihan + $request->keindahan + $request->kerapian + $request->penampilan,
-            'tanggal_awal_mingguan' => Carbon::createFromFormat('Y-m-d', $request->tanggal_penilaian, 'Asia/Kuala_Lumpur')->startOfWeek()->format('Y-m-d')
+            'total_nilai' => $request->kebersihan + $request->keindahan + $request->kerapian + $request->penampilan
         ]);
 
         return redirect()->route('penilaian.index')
@@ -149,7 +154,7 @@ class PenilaianController extends Controller
             return redirect()->route('penilaian.index')
                 ->with('error', 'Anda tidak memiliki akses.');
         }
-        
+
         $penilaian->delete();
 
         return redirect()->route('penilaian.index')
@@ -172,7 +177,8 @@ class PenilaianController extends Controller
         return $pegawais;
     }
 
-    public function pegawaiBelumDinilaiMingguTertentu(Request $request){
+    public function pegawaiBelumDinilaiMingguTertentu(Request $request)
+    {
         $id_penilai = $request->id_penilai;
         $tanggal = $request->tanggal;
         $tanggal_awal_mingguan = Carbon::createFromFormat('Y-m-d', $tanggal, 'Asia/Kuala_Lumpur')->startOfWeek()->format('Y-m-d');

@@ -63,6 +63,17 @@ class PenilaianRuanganController extends Controller
             'kerapian' => 'required|integer|min:0|max:10',
         ]);
 
+        $tanggal_awal_mingguan = Carbon::createFromFormat('Y-m-d', $request->tanggal_penilaian, 'Asia/Kuala_Lumpur')->startOfWeek()->format('Y-m-d');
+
+        if (PenilaianRuangan::where([
+            ['tanggal_awal_mingguan', '=', $tanggal_awal_mingguan],
+            ['penilai', '=', Auth::user()->id],
+            ['ruangan_id', '=', $request->ruangan_yang_dinilai]
+        ])->exists()) {
+            return redirect()->route('penilaian.ruangan.index')
+                ->with('error', 'Ruangan tersebut sudah dinilai pada minggu yang dipilih. Silakan ulangi penilaian!');
+        }
+
         $penilaian = PenilaianRuangan::create([
             'penilai' => Auth::user()->id,
             'ruangan_id' => (int) $request->ruangan_yang_dinilai,
@@ -71,7 +82,7 @@ class PenilaianRuanganController extends Controller
             'keindahan' => $request->keindahan,
             'kerapian' => $request->kerapian,
             'total_nilai' => $request->kebersihan + $request->keindahan + $request->kerapian,
-            'tanggal_awal_mingguan' => Carbon::createFromFormat('Y-m-d', $request->tanggal_penilaian, 'Asia/Kuala_Lumpur')->startOfWeek()->format('Y-m-d')
+            'tanggal_awal_mingguan' => $tanggal_awal_mingguan
         ]);
 
         if (!$penilaian->wasRecentlyCreated) {
@@ -102,7 +113,7 @@ class PenilaianRuanganController extends Controller
                 ->with('error', 'Anda tidak memiliki akses.');
         }
         $ruangans = Ruangan::get();
-        
+
         return view('penilaian.ruangan.edit', compact('penilaian', 'ruangans'));
     }
 
@@ -116,22 +127,17 @@ class PenilaianRuanganController extends Controller
         }
 
         $request->validate([
-            'ruangan_yang_dinilai' => 'required|integer',
-            'tanggal_penilaian' => 'required|date',
             'kebersihan' => 'required|integer|min:0|max:10',
             'keindahan' => 'required|integer|min:0|max:10',
             'kerapian' => 'required|integer|min:0|max:10',
         ]);
-        
+
         $penilaian->update([
             'penilai' => Auth::user()->id,
-            'ruangan_id' => $request->ruangan_yang_dinilai,
-            'tanggal_penilaian' => $request->tanggal_penilaian,
             'kebersihan' => $request->kebersihan,
             'keindahan' => $request->keindahan,
             'kerapian' => $request->kerapian,
-            'total_nilai' => $request->kebersihan + $request->keindahan + $request->kerapian,
-            'tanggal_awal_mingguan' => Carbon::createFromFormat('Y-m-d', $request->tanggal_penilaian, 'Asia/Kuala_Lumpur')->startOfWeek()->format('Y-m-d')
+            'total_nilai' => $request->kebersihan + $request->keindahan + $request->kerapian
         ]);
 
         return redirect()->route('penilaian.ruangan.index')
@@ -172,15 +178,15 @@ class PenilaianRuanganController extends Controller
         $tanggal = $request->tanggal;
         $tanggal_awal_mingguan = Carbon::createFromFormat('Y-m-d', $tanggal, 'Asia/Kuala_Lumpur')->startOfWeek()->format('Y-m-d');
         $ruangans = DB::table('ruangans')
-        ->select('ruangans.*')
-        ->leftJoin('penilaian_ruangans', function ($join) use ($id_penilai, $tanggal_awal_mingguan) {
-            $join->on('ruangans.id', '=', 'penilaian_ruangans.ruangan_id')
-                ->where('penilaian_ruangans.tanggal_awal_mingguan', '=', $tanggal_awal_mingguan)
-                ->where('penilaian_ruangans.penilai', '=', $id_penilai);
-        })
-        ->whereNull('penilaian_ruangans.id')
-        ->orderBy('ruangans.nama', 'asc')
-        ->get();
+            ->select('ruangans.*')
+            ->leftJoin('penilaian_ruangans', function ($join) use ($id_penilai, $tanggal_awal_mingguan) {
+                $join->on('ruangans.id', '=', 'penilaian_ruangans.ruangan_id')
+                    ->where('penilaian_ruangans.tanggal_awal_mingguan', '=', $tanggal_awal_mingguan)
+                    ->where('penilaian_ruangans.penilai', '=', $id_penilai);
+            })
+            ->whereNull('penilaian_ruangans.id')
+            ->orderBy('ruangans.nama', 'asc')
+            ->get();
         return response()->json($ruangans);
     }
 }
