@@ -36,74 +36,20 @@
         </div>
       </div>
       <div class="col-sm-6 col-md-3">
-        {{-- <div class="card card-stats card-round">
-          <div class="card-body">
-            <div class="row align-items-center">
-              <div class="col-icon">
-                <div
-                  class="icon-big text-center icon-info bubble-shadow-small"
-                >
-                  <i class="fas fa-user-check"></i>
-                </div>
-              </div>
-              <div class="col col-stats ms-3 ms-sm-0">
-                <div class="numbers">
-                  <p class="card-category">Subscribers</p>
-                  <h4 class="card-title">1303</h4>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> --}}
+
       </div>
       <div class="col-sm-6 col-md-3">
-        {{-- <div class="card card-stats card-round">
-          <div class="card-body">
-            <div class="row align-items-center">
-              <div class="col-icon">
-                <div
-                  class="icon-big text-center icon-success bubble-shadow-small"
-                >
-                  <i class="fas fa-luggage-cart"></i>
-                </div>
-              </div>
-              <div class="col col-stats ms-3 ms-sm-0">
-                <div class="numbers">
-                  <p class="card-category">Sales</p>
-                  <h4 class="card-title">$ 1,345</h4>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> --}}
+
       </div>
       <div class="col-sm-6 col-md-3">
-        {{-- <div class="card card-stats card-round">
-          <div class="card-body">
-            <div class="row align-items-center">
-              <div class="col-icon">
-                <div
-                  class="icon-big text-center icon-secondary bubble-shadow-small"
-                >
-                  <i class="far fa-check-circle"></i>
-                </div>
-              </div>
-              <div class="col col-stats ms-3 ms-sm-0">
-                <div class="numbers">
-                  <p class="card-category">Order</p>
-                  <h4 class="card-title">576</h4>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> --}}
+
       </div>
     </div>
     <div class="row">
       <div class="col-md-12">
         <div class="card">
           <div class="card-header">
-            <h4 class="card-title">Daftar Pegawai</h4>
+            <h4 class="card-title">Daftar Ruangan</h4>
           </div>
           <div class="card-body">
             <div class="table-responsive">
@@ -124,16 +70,16 @@
                       <div class="modal-dialog">
                         <div class="modal-content">
                           <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="{{'exampleModalLabel'.$ruangan->id}}">Hapus Pegawai</h1>
+                            <h1 class="modal-title fs-5" id="{{'exampleModalLabel'.$ruangan->id}}">Hapus Ruangan</h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                           </div>
                           <div class="modal-body">
-                            Apakah Anda yakin ingin menghapus Pegawai <strong>{{$ruangan->nama}}</strong> ?
+                            Apakah Anda yakin ingin menghapus <strong>{{$ruangan->nama}}</strong> ?
                           </div>
                           <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batalkan</button>
                             <form action="{{url('ruangan/destroy/'.$ruangan->id)}}">
-                              <button type="submit" class="btn btn-danger">Hapus Pegawai</button>
+                              <button type="submit" class="btn btn-danger">Hapus Ruangan</button>
                             </form>
                           </div>
                         </div>

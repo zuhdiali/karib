@@ -201,7 +201,7 @@ class MainController extends Controller
     public function logout()
     {
         Auth::logout();
-        return redirect()->route('login');
+        return redirect()->route('index');
     }
     
     // Fungsi filterMingguan digunakan untuk melihat progress penilaian pada minggu tertentu di halaman progress penilaian

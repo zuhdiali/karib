@@ -160,6 +160,7 @@ class PenilaianController extends Controller
     {
         $pegawais = DB::table('pegawais')
             ->select('pegawais.*')
+            ->where('pegawais.flag', '=', null)
             ->leftJoin('penilaians', function ($join) use ($id_penilai) {
                 $join->on('pegawais.id', '=', 'penilaians.pegawai_id')
                     ->where('penilaians.tanggal_awal_mingguan', '=', Carbon::now()->startOfWeek()->format('Y-m-d'))
@@ -177,6 +178,7 @@ class PenilaianController extends Controller
         $tanggal_awal_mingguan = Carbon::createFromFormat('Y-m-d', $tanggal, 'Asia/Kuala_Lumpur')->startOfWeek()->format('Y-m-d');
         $pegawais = DB::table('pegawais')
         ->select('pegawais.*')
+        ->where('pegawais.flag', '=', null)
         ->leftJoin('penilaians', function ($join) use ($id_penilai, $tanggal_awal_mingguan) {
             $join->on('pegawais.id', '=', 'penilaians.pegawai_id')
                 ->where('penilaians.tanggal_awal_mingguan', '=', $tanggal_awal_mingguan)

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ruangan;
+use App\Models\Pegawai;
 use Illuminate\Http\Request;
 
 class RuanganController extends Controller
@@ -57,10 +58,14 @@ class RuanganController extends Controller
         return redirect()->route('ruangan.index')->with('success', 'Ruangan berhasil diubah.');
     }
 
-    // public function destroy($id)
-    // {
-    //     $ruangan = Ruangan::find($id);
-    //     $ruangan->delete();
-    //     return redirect()->route('ruangan.index')->with('success', 'Ruangan berhasil dihapus.');
-    // }
+    public function destroy($id)
+    {
+        $pegawais = Pegawai::where('ruangan', $id)->get();
+        if (count($pegawais) > 0) {
+            return redirect()->route('ruangan.index')->with('error', 'Ruangan tidak bisa dihapus karena masih ada pegawai yang menggunakan ruangan ini.');
+        }
+        $ruangan = Ruangan::find($id);
+        $ruangan->delete();
+        return redirect()->route('ruangan.index')->with('success', 'Ruangan berhasil dihapus.');
+    }
 }

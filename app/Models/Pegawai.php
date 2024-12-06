@@ -13,5 +13,6 @@ class Pegawai extends Model
     protected $fillable = [
         'nama',
         'ruangan',
+        'flag'
     ];
 }

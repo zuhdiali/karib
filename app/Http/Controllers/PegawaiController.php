@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Pegawai;
 use App\Models\Ruangan;
+use App\Models\Penilaian;
 
 class PegawaiController extends Controller
 {
@@ -20,7 +21,8 @@ class PegawaiController extends Controller
 
     public function create()
     {
-        return view('pegawai.create');
+        $ruangans = Ruangan::orderBy('nama', 'asc')->get();
+        return view('pegawai.create', ['ruangans' => $ruangans]);
     }
 
     public function store(Request $request)
@@ -46,7 +48,8 @@ class PegawaiController extends Controller
     public function edit($id)
     {
         $pegawai = Pegawai::find($id);
-        return view('pegawai.edit', ['pegawai' => $pegawai]);
+        $ruangans = Ruangan::orderBy('nama', 'asc')->get();
+        return view('pegawai.edit', ['pegawai' => $pegawai, 'ruangans' => $ruangans]);
     }
 
     public function update(Request $request, $id)
@@ -55,20 +58,27 @@ class PegawaiController extends Controller
         $request->validate([
             'nama' => 'required|max:50',
             'ruangan' => 'required',
+            'flag' => 'required',
         ]);
 
         $pegawai = Pegawai::find($id);
         $pegawai->nama = $request->nama;
         $pegawai->ruangan = $request->ruangan;
+        if ($request->flag == "Aktif") {
+            $pegawai->flag = null;
+        }
         $pegawai->save();
 
         return redirect()->route('pegawai.index')->with('success', 'Pegawai berhasil diubah.');
     }
 
-    // public function destroy($id)
-    // {
-    //     $pegawai = Pegawai::find($id);
-    //     $pegawai->delete();
-    //     return redirect()->route('pegawai.index')->with('success', 'Pegawai berhasil dihapus.');
-    // }
+    public function destroy($id)
+    {
+        // $penilaians = Penilaian::where('pegawai_id', $id)->get();
+        // $penilaians->each->delete();
+        $pegawai = Pegawai::find($id);
+        $pegawai->flag = "Dihapus";
+        $pegawai->save();
+        return redirect()->route('pegawai.index')->with('success', 'Pegawai berhasil dihapus.');
+    }
 }
