@@ -11,12 +11,12 @@ class PegawaiController extends Controller
 {
     public function index()
     {
+        $pegawaiAktif = Pegawai::where('flag', null)->count();
         $pegawais = Pegawai::orderBy('nama', 'asc')->get();
         foreach ($pegawais as $pegawai) {
             $pegawai->ruangan = Ruangan::find($pegawai->ruangan);
         }
-        $totalPegawai = count($pegawais);
-        return view('pegawai.index', ['pegawais' => $pegawais, 'totalPegawai' => $totalPegawai]);
+        return view('pegawai.index', ['pegawais' => $pegawais, 'pegawaiAktif' => $pegawaiAktif]);
     }
 
     public function create()
