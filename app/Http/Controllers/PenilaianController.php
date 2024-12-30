@@ -16,28 +16,50 @@ class PenilaianController extends Controller
 {
     public function index()
     {
+        $totalPenilaianKomplit = 0;
         $totalPenilaian = 0;
         $penilaians = null;
         $pegawaiBelumDinilai = null;
+        $totalPenilaianYangBelumDilakukan = 0;
         if (Auth::user()->role == 'Penilai') {
             // Mengambil riwayat penilaian minggu ini untuk penilai yang sedang login
+            $totalPenilaianKomplit = DB::table('penilaians')
+                ->select(DB::raw('pegawai_id, COUNT(pegawai_id) as jumlah_penilaian'))
+                ->where([
+                    ['tanggal_awal_mingguan', '=', Carbon::now()->startOfWeek()->format('Y-m-d')],
+                    ['penilai', '=', Auth::user()->id],
+                ])
+                ->groupBy('pegawai_id')
+                ->having('jumlah_penilaian', '=', 3)
+                ->count();
+
             $totalPenilaian = Penilaian::where([
                 ['tanggal_awal_mingguan', '=', Carbon::now()->startOfWeek()->format('Y-m-d')],
                 ['penilai', '=', Auth::user()->id],
             ])->count();
             $penilaians = Penilaian::where('penilai', Auth::user()->id)->orderBy('created_at', 'desc')->get();
             $pegawaiBelumDinilai = ($this->pegawaiBelumDinilaiMingguIni(Auth::user()->id));
+            $totalPenilaianYangBelumDilakukan = Pegawai::where('flag', null)->count() * 3 - $totalPenilaian;
         } else {
             // Jika yang login adalah admin, ambil semua riwayat penilaian
             $penilaians = Penilaian::orderBy('created_at', 'desc')->get();
             $totalPenilaian = Penilaian::where('tanggal_awal_mingguan', Carbon::now()->startOfWeek()->format('Y-m-d'))->count();
+            $totalPenilaianKomplit = DB::table('penilaians')
+                ->select(DB::raw('pegawai_id, COUNT(pegawai_id) as jumlah_penilaian'))
+                ->where([
+                    ['tanggal_awal_mingguan', '=', Carbon::now()->startOfWeek()->format('Y-m-d')]
+                ])
+                ->groupBy('pegawai_id')
+                ->having('jumlah_penilaian', '=', 9)
+                ->count();
+            $totalPenilaianYangBelumDilakukan = Pegawai::where('flag', null)->count() * 9 - $totalPenilaian;
         }
         foreach ($penilaians as $penilaian) {
             $penilaian->pegawai = Pegawai::find($penilaian->pegawai_id);
             $penilaian->penilai = User::find($penilaian->penilai);
         }
 
-        return view('penilaian.index', compact('penilaians', 'totalPenilaian', 'pegawaiBelumDinilai'));
+        return view('penilaian.index', compact('penilaians', 'totalPenilaianKomplit', 'pegawaiBelumDinilai', 'totalPenilaian', 'totalPenilaianYangBelumDilakukan'));
     }
 
     public function create()
@@ -62,7 +84,7 @@ class PenilaianController extends Controller
             'kebersihan' => 'required|integer|min:0|max:10',
             'keindahan' => 'required|integer|min:0|max:10',
             'kerapian' => 'required|integer|min:0|max:10',
-            'penampilan' => 'required|integer|min:0|max:10',
+            // 'penampilan' => 'required|integer|min:0|max:10',
         ]);
 
         $tanggal_awal_mingguan = Carbon::createFromFormat('Y-m-d', $request->tanggal_penilaian, 'Asia/Kuala_Lumpur')->startOfWeek()->format('Y-m-d');
@@ -71,9 +93,9 @@ class PenilaianController extends Controller
             ['tanggal_awal_mingguan', '=', $tanggal_awal_mingguan],
             ['penilai', '=', Auth::user()->id],
             ['pegawai_id', '=', $request->pegawai_yang_dinilai]
-        ])->exists()) {
+        ])->count() > 3) {
             return redirect()->route('penilaian.index')
-                ->with('error', 'Pegawai tersebut sudah dinilai pada minggu yang dipilih. Silakan ulangi penilaian!');
+                ->with('error', 'Pegawai tersebut sudah dinilai 3x pada minggu ini. Silakan ulangi penilaian!');
         }
         $penilaian = Penilaian::create([
             'penilai' => Auth::user()->id,
@@ -82,8 +104,8 @@ class PenilaianController extends Controller
             'kebersihan' => $request->kebersihan,
             'keindahan' => $request->keindahan,
             'kerapian' => $request->kerapian,
-            'penampilan' => $request->penampilan,
-            'total_nilai' => $request->kebersihan + $request->keindahan + $request->kerapian + $request->penampilan,
+            // 'penampilan' => $request->penampilan,
+            'total_nilai' => $request->kebersihan + $request->keindahan + $request->kerapian,
             'tanggal_awal_mingguan' => Carbon::createFromFormat('Y-m-d', $request->tanggal_penilaian, 'Asia/Kuala_Lumpur')->startOfWeek()->format('Y-m-d')
         ]);
 
@@ -129,7 +151,7 @@ class PenilaianController extends Controller
             'kebersihan' => 'required|integer|min:0|max:10',
             'keindahan' => 'required|integer|min:0|max:10',
             'kerapian' => 'required|integer|min:0|max:10',
-            'penampilan' => 'required|integer|min:0|max:10',
+            // 'penampilan' => 'required|integer|min:0|max:10',
         ]);
 
         $penilaian = Penilaian::find($id);
@@ -138,8 +160,8 @@ class PenilaianController extends Controller
             'kebersihan' => $request->kebersihan,
             'keindahan' => $request->keindahan,
             'kerapian' => $request->kerapian,
-            'penampilan' => $request->penampilan,
-            'total_nilai' => $request->kebersihan + $request->keindahan + $request->kerapian + $request->penampilan
+            // 'penampilan' => $request->penampilan,
+            'total_nilai' => $request->kebersihan + $request->keindahan + $request->kerapian
         ]);
 
         return redirect()->route('penilaian.index')
@@ -164,14 +186,15 @@ class PenilaianController extends Controller
     private function pegawaiBelumDinilaiMingguIni($id_penilai)
     {
         $pegawais = DB::table('pegawais')
-            ->select('pegawais.*')
+            ->select('pegawais.*', DB::raw('COUNT(penilaians.id) as total_penilaian'))
             ->where('pegawais.flag', '=', null)
             ->leftJoin('penilaians', function ($join) use ($id_penilai) {
                 $join->on('pegawais.id', '=', 'penilaians.pegawai_id')
                     ->where('penilaians.tanggal_awal_mingguan', '=', Carbon::now()->startOfWeek()->format('Y-m-d'))
                     ->where('penilaians.penilai', '=', $id_penilai);
             })
-            ->whereNull('penilaians.id')
+            ->groupBy('pegawais.id')
+            ->having('total_penilaian', '<', 3)
             ->orderBy('pegawais.nama', 'asc')
             ->get();
         return $pegawais;
@@ -183,17 +206,18 @@ class PenilaianController extends Controller
         $tanggal = $request->tanggal;
         $tanggal_awal_mingguan = Carbon::createFromFormat('Y-m-d', $tanggal, 'Asia/Kuala_Lumpur')->startOfWeek()->format('Y-m-d');
         $pegawais = DB::table('pegawais')
-        ->select('pegawais.*')
-        ->where('pegawais.flag', '=', null)
-        ->leftJoin('penilaians', function ($join) use ($id_penilai, $tanggal_awal_mingguan) {
-            $join->on('pegawais.id', '=', 'penilaians.pegawai_id')
-                ->where('penilaians.tanggal_awal_mingguan', '=', $tanggal_awal_mingguan)
-                ->where('penilaians.penilai', '=', $id_penilai);
-        })
-        ->whereNull('penilaians.id')
-        ->orderBy('pegawais.nama', 'asc')
-        ->get();
-        
+            ->select('pegawais.*', DB::raw('COUNT(penilaians.id) as total_penilaian'))
+            ->where('pegawais.flag', '=', null)
+            ->leftJoin('penilaians', function ($join) use ($id_penilai, $tanggal_awal_mingguan) {
+                $join->on('pegawais.id', '=', 'penilaians.pegawai_id')
+                    ->where('penilaians.tanggal_awal_mingguan', '=', $tanggal_awal_mingguan)
+                    ->where('penilaians.penilai', '=', $id_penilai);
+            })
+            ->groupBy('pegawais.id')
+            ->having('total_penilaian', '<', 3)
+            ->orderBy('pegawais.nama', 'asc')
+            ->get();
+
         return response()->json($pegawais);
     }
 }

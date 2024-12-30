@@ -38,7 +38,7 @@
                                       </div>
 
                                     <div class="form-group {{$errors->has("ruangan") ? 'has-error has-feedback' : ''}}">
-                                        <label for="ruangan">Pegawai yang dinilai</label>
+                                        <label for="ruangan">Ruangan Pegawai</label>
                                         <select
                                             class="form-select"
                                             id="ruangan"

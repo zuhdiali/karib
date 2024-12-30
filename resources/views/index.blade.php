@@ -65,7 +65,7 @@
                       <tr>
                         <th>Penilai</th>
                         <th>Jumlah Penilaian</th>
-                        <th>Pegawai Belum Dinilai</th>
+                        <th>Penilaian Yang Kurang</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -74,7 +74,7 @@
                           <tr>
                             <th scope="row">{{$p->nama}}</th>
                             <td>{{$p->jumlah_penilaian}}</td>
-                            <td>{{$jumlah_pegawai - $p->jumlah_penilaian}}</td>
+                            <td>{{$jumlah_pegawai*3 - $p->jumlah_penilaian}}</td>
                           </tr>
                         @endif
                       @endforeach

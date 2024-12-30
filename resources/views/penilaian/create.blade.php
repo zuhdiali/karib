@@ -47,45 +47,18 @@
                                             <option value="" >(Pilih salah satu)</option>
                                             @foreach ($pegawais as $item)
                                             <option value="{{$item->id}}" {{ old("pegawai_yang_dinilai") == $item->id ? "selected" : ""}}>
-                                                {{$item->nama}} 
+                                                {{$item->total_penilaian}} - {{$item->nama}} 
                                             </option>
                                             @endforeach
                                         </select>
                                         @if ($errors->has("pegawai_yang_dinilai"))
                                         <small class="form-text text-muted">{{ $errors->first("pegawai_yang_dinilai") }}</small>
-                                        @endif
+                                        @else
+                                        <small class="form-text text-muted">Angka di sebelah kiri nama pegawai menunjukkan jumlah penilaian yang sudah dilakukan minggu ini.</small>
                                         <hr/>
-                                    </div>
-
-                                    <div class="form-group {{$errors->has("penampilan") ? 'has-error has-feedback' : ''}}">
-                                        <label for="penampilan"><h3>Penampilan</h3></label>
-                                        <ul>
-                                            <li>Kerapian berpakaian, baju layak dipakai (tidak luntur, tidak sobek, pas di badan)</li>
-                                            <li>Penggunaan seragam lengkap sesuai jadwal (Senin, Selasa, KORPRI)</li>
-                                            <li>Kelengkapan atribut (ID Card)</li>
-                                            <li>Bersepatu di jam kerja</li>
-                                            <li>Rambut rapi</li>
-                                            <li>Keserasian berpakaian (atasan dan bawahan enak dipandang)</li>
-                                        </ul>
-                                        <input
-                                            type="range"
-                                            min="0"
-                                            max="10"
-                                            class="form-range"
-                                            id="penampilan"
-                                            name="penampilan"
-                                            value="{{ old("penampilan") }}"
-                                            oninput="this.nextElementSibling.value = this.value"
-                                        />
-                                        Nilai Penampilan:
-                                        <output>{{ old("penampilan") }}</output>
-                                        @if ($errors->has("penampilan"))
-                                        <small class="form-text text-muted">{{ $errors->first("penampilan") }}</small>
                                         @endif
                                     </div>
 
-                                </div>
-                                <div class="col-md-6">
                                     <div class="form-group {{$errors->has("kebersihan") ? 'has-error has-feedback' : ''}}">
                                         <label for="kebersihan">
                                             <h3>Kebersihan</h3>
@@ -112,6 +85,36 @@
                                         @endif
                                         <hr/>
                                     </div>
+                                    {{-- <div class="form-group {{$errors->has("penampilan") ? 'has-error has-feedback' : ''}}">
+                                        <label for="penampilan"><h3>Penampilan</h3></label>
+                                        <ul>
+                                            <li>Kerapian berpakaian, baju layak dipakai (tidak luntur, tidak sobek, pas di badan)</li>
+                                            <li>Penggunaan seragam lengkap sesuai jadwal (Senin, Selasa, KORPRI)</li>
+                                            <li>Kelengkapan atribut (ID Card)</li>
+                                            <li>Bersepatu di jam kerja</li>
+                                            <li>Rambut rapi</li>
+                                            <li>Keserasian berpakaian (atasan dan bawahan enak dipandang)</li>
+                                        </ul>
+                                        <input
+                                            type="range"
+                                            min="0"
+                                            max="10"
+                                            class="form-range"
+                                            id="penampilan"
+                                            name="penampilan"
+                                            value="{{ old("penampilan") }}"
+                                            oninput="this.nextElementSibling.value = this.value"
+                                        />
+                                        Nilai Penampilan:
+                                        <output>{{ old("penampilan") }}</output>
+                                        @if ($errors->has("penampilan"))
+                                        <small class="form-text text-muted">{{ $errors->first("penampilan") }}</small>
+                                        @endif
+                                    </div> --}}
+
+                                </div>
+                                <div class="col-md-6">
+                                    
 
                                     <div class="form-group {{$errors->has("keindahan") ? 'has-error has-feedback' : ''}}">
                                         <label for="keindahan">
@@ -198,11 +201,12 @@
                     tanggal: $("#tanggal_penilaian").val()
                 },
                 success: function(msg){
+                    // console.log(new Date().toLocaleString());
                     $("#pegawai_yang_dinilai").empty();
                     $("#pegawai_yang_dinilai").append('<option value="">(Pilih salah satu)</option>');
                     if(msg.length > 0){
                         msg.forEach(function(p){
-                            $("#pegawai_yang_dinilai").append('<option value="'+p.id+'">'+p.nama+'</option>');
+                            $("#pegawai_yang_dinilai").append('<option value="'+p.id+'">'+p.total_penilaian+' - '+p.nama+'</option>');
                         });
                     }
 

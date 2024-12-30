@@ -20,7 +20,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-sm-6 col-md-4">
+      <div class="col-sm-6 col-md-3">
         <div class="card card-stats card-round">
           <div class="card-body">
             <div class="row align-items-center">
@@ -28,17 +28,86 @@
                 <div
                   class="icon-big text-center icon-success bubble-shadow-small"
                 >
-                  <i class="fas fa-users"></i>
+                <i class="fas fa-user-check"></i>
                 </div>
               </div>
               <div class="col col-stats ms-3 ms-sm-0">
                 <div class="numbers">
                   <p class="card-category">
-                    @if (Auth::user()->role == 'Penilai')
-                      Pegawai Yang Sudah Dinilai Minggu Ini
-                    @else
-                      Total Penilaian Yang Sudah Dilakukan Minggu ini
-                    @endif
+                      Pegawai Selesai Dinilai
+                  </p>
+                  <h4 class="card-title">{{$totalPenilaianKomplit}}</h4>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      @if (Auth::user()->role == 'Penilai')
+      <div class="col-sm-6 col-md-3">
+        <div class="card card-stats card-round">
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col-icon">
+                <div
+                  class="icon-big text-center icon-danger bubble-shadow-small"
+                >
+                <i class="fas fa-user-check"></i>
+                </div>
+              </div>
+              <div class="col col-stats ms-3 ms-sm-0">
+                <div class="numbers">
+                  <p class="card-category">Pegawai Belum Selesai Dinilai</p>
+                  <h4 class="card-title">{{count($pegawaiBelumDinilai)}}</h4>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+          <div class="card">
+            
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Pegawai Belum Selesai Dinilai Minggu Ini</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    @foreach($pegawaiBelumDinilai as $pegawai)
+                    <p>{{$pegawai->nama}}</p>
+                    @endforeach
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      @endif
+
+
+      <div class="col-sm-6 col-md-3">
+        <div class="card card-stats card-round">
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col-icon">
+                <div
+                  class="icon-big text-center icon-success bubble-shadow-small"
+                >
+                <i class="fas fa-clipboard-check"></i>
+                </div>
+              </div>
+              <div class="col col-stats ms-3 ms-sm-0">
+                <div class="numbers">
+                  <p class="card-category">
+                      Total Penilaian Minggu Ini
                   </p>
                   <h4 class="card-title">{{$totalPenilaian}}</h4>
                 </div>
@@ -47,8 +116,9 @@
           </div>
         </div>
       </div>
+
       @if (Auth::user()->role == 'Penilai')
-      <div class="col-sm-6 col-md-4">
+      <div class="col-sm-6 col-md-3">
         <div class="card card-stats card-round">
           <div class="card-body">
             <div class="row align-items-center">
@@ -56,37 +126,13 @@
                 <div
                   class="icon-big text-center icon-danger bubble-shadow-small"
                 >
-                  <i class="fas fa-users"></i>
+                <i class="fas fa-clipboard-check"></i>
                 </div>
               </div>
               <div class="col col-stats ms-3 ms-sm-0">
                 <div class="numbers">
-                  <p class="card-category">Pegawai Yang Belum Dinilai Minggu Ini</p>
-                  <h4 class="card-title">{{count($pegawaiBelumDinilai)}}</h4>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-sm-6 col-md-4">
-        <div class="card">
-          
-          <!-- Modal -->
-          <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h1 class="modal-title fs-5" id="exampleModalLabel">Pegawai Belum Dinilai Minggu Ini</h1>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                  @foreach($pegawaiBelumDinilai as $pegawai)
-                  <p>{{$pegawai->nama}}</p>
-                  @endforeach
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                  <p class="card-category">Total Penilaian Yang Belum Dilakukan</p>
+                  <h4 class="card-title">{{$totalPenilaianYangBelumDilakukan}}</h4>
                 </div>
               </div>
             </div>
@@ -115,7 +161,7 @@
                     <th>Kerapian</th>
                     <th>Keindahan</th>
                     <th>Kebersihan</th>
-                    <th>Penampilan</th>
+                    {{-- <th>Penampilan</th> --}}
                     <th>Total Nilai</th>
                     <th>Tanggal Dinilai</th>
                   </tr>
@@ -128,7 +174,7 @@
                     <th>Kerapian</th>
                     <th>Keindahan</th>
                     <th>Kebersihan</th>
-                    <th>Penampilan</th>
+                    {{-- <th>Penampilan</th> --}}
                     <th>Total Nilai</th>
                     <th>Tanggal Dinilai</th>
                   </tr>
@@ -187,10 +233,9 @@
                       <td>{{$nilai->kerapian}}</td>
                       <td>{{$nilai->keindahan}}</td>
                       <td>{{$nilai->kebersihan}}</td>
-                      <td>{{$nilai->penampilan}}</td>
+                      {{-- <td>{{$nilai->penampilan}}</td> --}}
                       <td>{{$nilai->total_nilai}}</td>
-                      <td>{{$nilai->tanggal_penilaian}}</td>
-                      
+                      <td>{{\Carbon\Carbon::parse($nilai->tanggal_penilaian)->translatedFormat('d M Y')}}</td>
                     </tr>
                   @endforeach
                 </tbody>

@@ -109,7 +109,7 @@
                         <th>Kebersihan</th>
                         <th>Total Nilai</th>
                         <th>Nilai rata-rata Pegawai</th>
-                        <th>Penilaian Kepala BPS</th>
+                        {{-- <th>Penilaian Kepala BPS</th> --}}
                         <th>Nilai Akhir</th>
                       </tr>
                     </thead>
@@ -122,7 +122,7 @@
                           <td>{{$nilai->rerata_kebersihan}}</td>
                           <td>{{$nilai->rerata_total_nilai}}</td>
                           <td>{{$nilai->rerata_pegawai->rerata_nilai}}</td>
-                          <td>{{$nilai->penilaian_kepala_bps->total_nilai}}</td>
+                          {{-- <td>{{$nilai->penilaian_kepala_bps->total_nilai}}</td> --}}
                           <td>{{$nilai->nilai_akhir}}</td>
                         </tr>
                       @endforeach
@@ -151,7 +151,7 @@
                         <th>Kerapian</th>
                         <th>Keindahan</th>
                         <th>Kebersihan</th>
-                        <th>Penampilan</th>
+                        {{-- <th>Penampilan</th> --}}
                         <th>Total Nilai</th>
                       </tr>
                     </thead>
@@ -162,7 +162,7 @@
                           <td>{{$nilai->rerata_kerapian}}</td>
                           <td>{{$nilai->rerata_keindahan}}</td>
                           <td>{{$nilai->rerata_kebersihan}}</td>
-                          <td>{{$nilai->rerata_penampilan}}</td>
+                          {{-- <td>{{$nilai->rerata_penampilan}}</td> --}}
                           <td>{{$nilai->rerata_total_nilai}}</td>
                         </tr>
                       @endforeach
@@ -204,7 +204,6 @@
                   <td>${nilai.rerata_kerapian}</td>
                   <td>${nilai.rerata_keindahan}</td>
                   <td>${nilai.rerata_kebersihan}</td>
-                  <td>${nilai.rerata_penampilan}</td>
                   <td>${nilai.rerata_total_nilai}</td>
                 </tr>
               `);
@@ -222,7 +221,6 @@
                   <td>${nilai.rerata_kebersihan}</td>
                   <td>${nilai.rerata_total_nilai}</td>
                   <td>${nilai.rerata_pegawai.rerata_nilai}</td>
-                  <td>${nilai.penilaian_kepala_bps ? nilai.penilaian_kepala_bps.total_nilai : 0}</td>
                   <td>${nilai.nilai_akhir}</td>
                 </tr>
               `);

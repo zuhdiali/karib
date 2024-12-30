@@ -180,7 +180,7 @@
                       <td>{{$nilai->keindahan}}</td>
                       <td>{{$nilai->kebersihan}}</td>
                       <td>{{$nilai->total_nilai}}</td>
-                      <td>{{$nilai->tanggal_penilaian}}</td>
+                      <td>{{\Carbon\Carbon::parse($nilai->tanggal_penilaian)->translatedFormat('d M Y')}}</td>}</td>
                       
                     </tr>
                   @endforeach

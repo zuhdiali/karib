@@ -53,36 +53,6 @@
                                         <hr/>
                                     </div>
 
-                                    <div class="form-group {{$errors->has("penampilan") ? 'has-error has-feedback' : ''}}">
-                                        <label for="penampilan"><h3>Penampilan</h3></label>
-                                        <ul>
-                                            <li>Kerapian berpakaian, baju layak dipakai (tidak luntur, tidak sobek, pas di badan)</li>
-                                            <li>Penggunaan seragam lengkap sesuai jadwal (Senin, Selasa, KORPRI)</li>
-                                            <li>Kelengkapan atribut (ID Card)</li>
-                                            <li>Bersepatu di jam kerja</li>
-                                            <li>Rambut rapi</li>
-                                            <li>Keserasian berpakaian (atasan dan bawahan enak dipandang)</li>
-                                        </ul>
-                                        <input
-                                            type="range"
-                                            min="0"
-                                            max="10"
-                                            class="form-range"
-                                            id="penampilan"
-                                            placeholder="Masukkan nilai penampilan (0-10)"
-                                            name="penampilan"
-                                            value="{{ old("penampilan") ? old("penampilan") : $penilaian->penampilan }}"
-                                            oninput="this.nextElementSibling.value = this.value"
-                                        />
-                                        Nilai Penampilan:
-                                        <output>{{ old("penampilan") ? old("penampilan") : $penilaian->penampilan }}</output>
-                                        @if ($errors->has("penampilan"))
-                                        <small class="form-text text-muted">{{ $errors->first("penampilan") }}</small>
-                                        @endif
-                                    </div>
-
-                                </div>
-                                <div class="col-md-6">
                                     <div class="form-group {{$errors->has("kebersihan") ? 'has-error has-feedback' : ''}}">
                                         <label for="kebersihan">
                                             <h3>Kebersihan</h3>
@@ -110,6 +80,37 @@
                                         @endif
                                         <hr/>
                                     </div>
+                                    
+                                    {{-- <div class="form-group {{$errors->has("penampilan") ? 'has-error has-feedback' : ''}}">
+                                        <label for="penampilan"><h3>Penampilan</h3></label>
+                                        <ul>
+                                            <li>Kerapian berpakaian, baju layak dipakai (tidak luntur, tidak sobek, pas di badan)</li>
+                                            <li>Penggunaan seragam lengkap sesuai jadwal (Senin, Selasa, KORPRI)</li>
+                                            <li>Kelengkapan atribut (ID Card)</li>
+                                            <li>Bersepatu di jam kerja</li>
+                                            <li>Rambut rapi</li>
+                                            <li>Keserasian berpakaian (atasan dan bawahan enak dipandang)</li>
+                                        </ul>
+                                        <input
+                                            type="range"
+                                            min="0"
+                                            max="10"
+                                            class="form-range"
+                                            id="penampilan"
+                                            placeholder="Masukkan nilai penampilan (0-10)"
+                                            name="penampilan"
+                                            value="{{ old("penampilan") ? old("penampilan") : $penilaian->penampilan }}"
+                                            oninput="this.nextElementSibling.value = this.value"
+                                        />
+                                        Nilai Penampilan:
+                                        <output>{{ old("penampilan") ? old("penampilan") : $penilaian->penampilan }}</output>
+                                        @if ($errors->has("penampilan"))
+                                        <small class="form-text text-muted">{{ $errors->first("penampilan") }}</small>
+                                        @endif
+                                    </div> --}}
+
+                                </div>
+                                <div class="col-md-6">
 
                                     <div class="form-group {{$errors->has("keindahan") ? 'has-error has-feedback' : ''}}">
                                         <label for="keindahan">

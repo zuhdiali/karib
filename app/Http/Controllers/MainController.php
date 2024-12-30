@@ -43,7 +43,7 @@ class MainController extends Controller
             $penilai->jumlah_penilaian_ruangan = PenilaianRuangan::where('penilai', $penilai->id)->where('tanggal_awal_mingguan', $tanggal_awal_mingguan)->count();
         }
 
-        // dd($penilais);
+        // dd($jumlah_pegawai);
         return view('index', compact(
             'filterMingguan',
             'penilais',
