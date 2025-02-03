@@ -22,7 +22,7 @@ use App\Http\Controllers\PenilaianRuanganController;
 Route::get('/', [MainController::class, 'index'])->name('index');
 Route::get('/login', [MainController::class, 'login'])->name('login');
 Route::post('/login', [MainController::class, 'loginPost'])->name('login.post');
-Route::get('/rekap', [MainController::class, 'rekap'])->name('rekap');
+
 Route::post('/filter-mingguan', [MainController::class, 'filterMingguan'])->name('filter-mingguan');
 Route::post('/rekap-mingguan', [MainController::class, 'rekapMingguan'])->name('rekap-mingguan');
 Route::post('/rekap-bulanan', [MainController::class, 'rekapBulanan'])->name('rekap-bulanan');
@@ -30,6 +30,7 @@ Route::post('/rekap-triwulan', [MainController::class, 'rekapTriwulan'])->name('
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/logout', [MainController::class, 'logout'])->name('logout');
+    Route::get('/rekap', [MainController::class, 'rekap'])->name('rekap');
 
     Route::prefix('user')->name('user.')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');

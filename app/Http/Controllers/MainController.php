@@ -55,6 +55,9 @@ class MainController extends Controller
 
     public function rekap()
     {
+        if (Auth::user()->role != 'Admin') {
+            return redirect()->route('index')->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
+        }
         $tanggal_awal_mingguan = Carbon::now()->startOfWeek()->format('Y-m-d');
         // Membuat daftar filter untuk penilaian
         $filterMingguan = DB::table('penilaians')

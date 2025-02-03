@@ -159,7 +159,7 @@ $(document).ready(function () {
                             <tr>
                               <th scope="row">${p.nama}</th>
                               <td>${p.jumlah_penilaian}</td>
-                              <td>${jumlah_pegawai - p.jumlah_penilaian}</td>
+                              <td>${jumlah_pegawai*3 - p.jumlah_penilaian}</td>
                             </tr>
                           `);
                         }

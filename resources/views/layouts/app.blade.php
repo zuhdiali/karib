@@ -83,13 +83,8 @@
                     </a>
                 </li>
 
-                <li class="nav-item {{ Request::path() ==  'rekap' ? 'active' : ''  }}">
-                  <a href="{{route('rekap')}}">
-                      <i class="fas fa-clipboard-check"></i>
-                      <p>Rekap</p>
-                  </a>
-              </li>
-
+                
+                
                 @if(Auth::check())
                   @if (Auth::user()->role == 'Penilai')
                   <li class="nav-section">
@@ -118,7 +113,12 @@
                   
 
                   @if (Auth::user()->role == 'Admin')
-                  
+                  <li class="nav-item {{ Request::path() ==  'rekap' ? 'active' : ''  }}">
+                    <a href="{{route('rekap')}}">
+                        <i class="fas fa-clipboard-check"></i>
+                        <p>Rekap</p>
+                    </a>
+                  </li>
                   <li class="nav-section">
                     <span class="sidebar-mini-icon">
                       <i class="fa fa-ellipsis-h"></i>

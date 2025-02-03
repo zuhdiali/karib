@@ -121,7 +121,6 @@
                                             <h3>Keindahan</h3>
                                         </label>
                                         <ul>
-                                            <li>Penempatan hiasan meja (bunga/vas bunga, foto, dll)</li>
                                             <li>Seni penataan barang</li>
                                         </ul>
                                         <input
