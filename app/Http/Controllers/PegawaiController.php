@@ -66,6 +66,8 @@ class PegawaiController extends Controller
         $pegawai->ruangan = $request->ruangan;
         if ($request->flag == "Aktif") {
             $pegawai->flag = null;
+        } else {
+            $pegawai->flag = $request->flag;
         }
         $pegawai->save();
 
