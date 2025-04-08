@@ -96,9 +96,13 @@ class MainController extends Controller
             ->get();
         foreach ($penilaians as $penilaian) {
             $penilaian->pegawai = Pegawai::find($penilaian->pegawai_id);
-            if ($penilaian->rerata_total_nilai > $nilai_pegawai_tinggi) {
-                $nilai_pegawai_tinggi = $penilaian->rerata_total_nilai;
-                $nilai_pegawai_tinggi_nama = $penilaian->pegawai->nama;
+            if ($penilaian->rerata_total_nilai >= $nilai_pegawai_tinggi) {
+                if ($penilaian->rerata_total_nilai > $nilai_pegawai_tinggi) {
+                    $nilai_pegawai_tinggi = $penilaian->rerata_total_nilai;
+                    $nilai_pegawai_tinggi_nama = $penilaian->pegawai->nama;
+                } else {
+                    $nilai_pegawai_tinggi_nama .= "," . $penilaian->pegawai->nama;
+                }
             }
         }
 
@@ -289,9 +293,15 @@ class MainController extends Controller
             ->get();
         foreach ($penilaians as $penilaian) {
             $penilaian->pegawai = Pegawai::find($penilaian->pegawai_id);
-            if ($penilaian->rerata_total_nilai > $nilai_pegawai_tinggi) {
-                $nilai_pegawai_tinggi = $penilaian->rerata_total_nilai;
-                $nilai_pegawai_tinggi_nama = $penilaian->pegawai->nama;
+            if ($penilaian->rerata_total_nilai >= $nilai_pegawai_tinggi && $penilaian->pegawai->flag == null) {
+                if ($penilaian->rerata_total_nilai >= $nilai_pegawai_tinggi) {
+                    if ($penilaian->rerata_total_nilai > $nilai_pegawai_tinggi) {
+                        $nilai_pegawai_tinggi = $penilaian->rerata_total_nilai;
+                        $nilai_pegawai_tinggi_nama = $penilaian->pegawai->nama;
+                    } else {
+                        $nilai_pegawai_tinggi_nama .= " -- " . $penilaian->pegawai->nama;
+                    }
+                }
             }
         }
 
@@ -388,9 +398,13 @@ class MainController extends Controller
             ->get();
         foreach ($penilaians as $penilaian) {
             $penilaian->pegawai = Pegawai::find($penilaian->pegawai_id);
-            if ($penilaian->rerata_total_nilai > $nilai_pegawai_tinggi) {
-                $nilai_pegawai_tinggi = $penilaian->rerata_total_nilai;
-                $nilai_pegawai_tinggi_nama = $penilaian->pegawai->nama;
+            if ($penilaian->rerata_total_nilai >= $nilai_pegawai_tinggi && $penilaian->pegawai->flag == null) {
+                if ($penilaian->rerata_total_nilai > $nilai_pegawai_tinggi) {
+                    $nilai_pegawai_tinggi = $penilaian->rerata_total_nilai;
+                    $nilai_pegawai_tinggi_nama = $penilaian->pegawai->nama;
+                } else {
+                    $nilai_pegawai_tinggi_nama .= " -- " . $penilaian->pegawai->nama;
+                }
             }
         }
 
@@ -494,9 +508,13 @@ class MainController extends Controller
             ->get();
         foreach ($penilaians as $penilaian) {
             $penilaian->pegawai = Pegawai::find($penilaian->pegawai_id);
-            if ($penilaian->rerata_total_nilai > $nilai_pegawai_tinggi) {
-                $nilai_pegawai_tinggi = $penilaian->rerata_total_nilai;
-                $nilai_pegawai_tinggi_nama = $penilaian->pegawai->nama;
+            if ($penilaian->rerata_total_nilai >= $nilai_pegawai_tinggi && $penilaian->pegawai->flag == null) {
+                if ($penilaian->rerata_total_nilai > $nilai_pegawai_tinggi) {
+                    $nilai_pegawai_tinggi = $penilaian->rerata_total_nilai;
+                    $nilai_pegawai_tinggi_nama = $penilaian->pegawai->nama;
+                } else {
+                    $nilai_pegawai_tinggi_nama .= " -- " . $penilaian->pegawai->nama;
+                }
             }
         }
 
