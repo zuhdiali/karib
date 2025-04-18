@@ -31,7 +31,7 @@
                         <select class="form-control" id="filter-mingguan" name="filter-mingguan">
                           <option value="">-- Pilih Minggu ---</option>
                           @if(count($penilaians) == 0)
-                            <option value="{{ \Carbon\Carbon::now()->startOfWeek()->format('Y-m-d') }}" selected >Minggu ini ({{ \Carbon\Carbon::now()->startOfWeek()->locale('id')->format('d M Y') }} s/d {{ \Carbon\Carbon::now()->endOfWeek()->locale('id')->format('d M Y') }})</option>
+                            <option value="{{ \Carbon\Carbon::now()->startOfWeek()->format('Y-m-d') }}" selected >Minggu ini ({{ \Carbon\Carbon::now()->startOfWeek()->locale('id')->format('d M') }} - {{ \Carbon\Carbon::now()->endOfWeek()->locale('id')->format('d M') }})</option>
                           @endif
                           @foreach($filterMingguan as $minggu)
                           <?php 
@@ -42,7 +42,7 @@
                             @if ($dateRaw->isCurrentWeek())
                               <option value="{{Carbon\Carbon::now()->startOfWeek()->format('Y-m-d')}}" selected >Minggu Sekarang ({{$dateRaw->startOfweek()->locale('id')->format('d M Y')}} s/d {{$dateRaw->endOfweek()->locale('id')->format('d M Y')}})</option>
                             @else
-                              <option value="{{$date}}"> Minggu {{$minggu->Minggu}}, Tahun {{$minggu->Tahun}} ({{$dateRaw->startOfweek()->locale('id')->format('d M Y')}} s/d {{$dateRaw->endOfweek()->locale('id')->format('d M Y')}})</option>
+                              <option value="{{$date}}"> Minggu {{$minggu->Minggu}}, Tahun {{$minggu->Tahun}} ({{$dateRaw->startOfweek()->locale('id')->format('d M')}} - {{$dateRaw->endOfweek()->locale('id')->format('d M')}})</option>
                             @endif
                             @endforeach
                         </select>
@@ -59,7 +59,7 @@
                         $dateRaw = Carbon\Carbon::create($bulan->Tahun, $bulan->Bulan, 1);
                         $date = $dateRaw->format('Y-m-01');
                         ?>
-                        <option value="{{$date}}">{{$dateRaw->locale('id')->format('M Y')}}</option>
+                        <option value="{{$date}}">{{$dateRaw->locale('id')->translatedFormat('F Y')}}</option>
                         @endforeach
                       </select>
                     </div>

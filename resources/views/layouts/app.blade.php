@@ -82,7 +82,6 @@
                         <p>Progress Penilaian</p>
                     </a>
                 </li>
-
                 
                 
                 @if(Auth::check())
@@ -149,6 +148,51 @@
                   @endif
                 @endif
 
+                <li class="nav-section">
+                  <span class="sidebar-mini-icon">
+                    <i class="fa fa-ellipsis-h"></i>
+                  </span>
+                  <h4 class="text-section">TALAK</h4>
+                </li>
+
+                <li class="nav-item {{ str_contains(Request::path(), 'talak') && !str_contains(Request::path(), 'penilaian') ? 'active' : ''  }}">
+                  <a href="{{route('talak.index')}}">
+                      <i class="fas fa-trophy"></i>
+                      <p>TALAK</p>
+                  </a>
+                </li>
+
+                @if (Auth::check() && Auth::user()->role == 'Admin')
+                <li class="nav-item {{ str_contains(Request::path(), 'penilaian-talak') ? 'active' : ''  }}">
+                  <a href="{{route('penilaian-talak')}}">
+                      <i class="fas fa-clipboard-check"></i>
+                      <p>Penilaian TALAK</p>
+                  </a>
+                </li>
+                @endif
+
+                <li class="nav-section">
+                  <span class="sidebar-mini-icon">
+                    <i class="fa fa-ellipsis-h"></i>
+                  </span>
+                  <h4 class="text-section">ONAR</h4>
+                </li>
+
+                <li class="nav-item {{ str_contains(Request::path(), 'onar') && !str_contains(Request::path(), 'penilaian') ? 'active' : ''  }}">
+                  <a href="{{route('onar.index')}}">
+                      <i class="fas fa-trophy"></i>
+                      <p>ONAR</p>
+                  </a>
+                </li>
+
+                @if (Auth::check() && Auth::user()->role == 'Admin')
+                <li class="nav-item {{ str_contains(Request::path(), 'penilaian-onar') ? 'active' : ''  }}">
+                  <a href="{{route('penilaian-onar')}}">
+                      <i class="fas fa-clipboard-check"></i>
+                      <p>Penilaian ONAR</p>
+                  </a>
+                </li>
+                @endif
             </ul>
           </div>
         </div>

@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\OnarController;
+use App\Http\Controllers\TalakController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\RuanganController;
 use App\Http\Controllers\PenilaianController;
@@ -28,9 +30,20 @@ Route::post('/rekap-mingguan', [MainController::class, 'rekapMingguan'])->name('
 Route::post('/rekap-bulanan', [MainController::class, 'rekapBulanan'])->name('rekap-bulanan');
 Route::post('/rekap-triwulan', [MainController::class, 'rekapTriwulan'])->name('rekap-triwulan');
 
+Route::get('/talak', [TalakController::class, 'index'])->name('talak.index');
+Route::get('/penilaian-talak/create/{id}', [TalakController::class, 'createPenilaian'])->name('penilaian-talak.create');
+Route::post('/penilaian-talak/store/{id}', [TalakController::class, 'storePenilaian'])->name('penilaian-talak.store');
+
+Route::get('/onar', [OnarController::class, 'index'])->name('onar.index');
+Route::get('/penilaian-onar/create/{id}', [OnarController::class, 'createPenilaian'])->name('penilaian-onar.create');
+Route::post('/penilaian-onar/store/{id}', [OnarController::class, 'storePenilaian'])->name('penilaian-onar.store');
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/logout', [MainController::class, 'logout'])->name('logout');
     Route::get('/rekap', [MainController::class, 'rekap'])->name('rekap');
+
+    Route::get('/penilaian-talak', [TalakController::class, 'indexPenilaian'])->name('penilaian-talak');
+    Route::get('/penilaian-onar', [OnarController::class, 'indexPenilaian'])->name('penilaian-onar');
 
     Route::prefix('user')->name('user.')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
@@ -77,5 +90,23 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/destroy/{id}', [PenilaianRuanganController::class, 'destroy'])->name('destroy');
             Route::post('/list-ruangan-belum-dinilai', [PenilaianRuanganController::class, 'ruanganBelumDinilaiMingguTertentu'])->name('list-ruangan-belum-dinilai');
         });
+    });
+
+    Route::prefix('talak')->name('talak.')->group(function () {
+        Route::get('/create', [TalakController::class, 'create'])->name('create');
+        Route::post('/store', [TalakController::class, 'store'])->name('store');
+        Route::get('/show/{id}', [TalakController::class, 'show'])->name('show');
+        Route::get('/edit/{id}', [TalakController::class, 'edit'])->name('edit');
+        Route::post('/update/{id}', [TalakController::class, 'update'])->name('update');
+        Route::get('/destroy/{id}', [TalakController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('onar')->name('onar.')->group(function () {
+        Route::get('/create', [OnarController::class, 'create'])->name('create');
+        Route::post('/store', [OnarController::class, 'store'])->name('store');
+        Route::get('/show/{id}', [OnarController::class, 'show'])->name('show');
+        Route::get('/edit/{id}', [OnarController::class, 'edit'])->name('edit');
+        Route::post('/update/{id}', [OnarController::class, 'update'])->name('update');
+        Route::get('/destroy/{id}', [OnarController::class, 'destroy'])->name('destroy');
     });
 });

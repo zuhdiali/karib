@@ -299,7 +299,7 @@ class MainController extends Controller
                         $nilai_pegawai_tinggi = $penilaian->rerata_total_nilai;
                         $nilai_pegawai_tinggi_nama = $penilaian->pegawai->nama;
                     } else {
-                        $nilai_pegawai_tinggi_nama .= " -- " . $penilaian->pegawai->nama;
+                        $nilai_pegawai_tinggi_nama .= " & " . $penilaian->pegawai->nama;
                     }
                 }
             }
