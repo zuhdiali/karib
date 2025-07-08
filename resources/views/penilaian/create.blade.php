@@ -46,9 +46,15 @@
                                         >
                                             <option value="" >(Pilih salah satu)</option>
                                             @foreach ($pegawais as $item)
-                                            <option value="{{$item->id}}" {{ old("pegawai_yang_dinilai") == $item->id ? "selected" : ""}}>
-                                                {{$item->total_penilaian}} - {{$item->nama}} 
-                                            </option>
+                                                {{-- Validasi ini digunakan untuk melakukan penilaian di sore hari. Ketika sudah ada penilaian maka akan dicek apakah sekarang sudah pukul 16.00WIB --}}
+                                                {{-- Jika belum pukul 16.00 WIB maka penilaian terhadap pegawai ini tidak dapat dilakukan --}}
+                                                {{-- kuncinya adalah  'now()->hour >= 9'. Harusnya  'now()->hour >= 16' tetapi karena server menggunakan UTC+0, sedangkan WIB adalah UTC+7 jadi harus disesuaikan --}}
+                                                @if($item->tanggal_terakhir_penilaian == null || ($item->tanggal_terakhir_penilaian != null && now()->hour >= 9))
+                                                <option value="{{$item->id}}" {{ old("pegawai_yang_dinilai") == $item->id ? "selected" : ""}}>
+                                                    {{$item->total_penilaian}} - {{$item->nama}} 
+                                                </option>
+                                                @endif
+
                                             @endforeach
                                         </select>
                                         @if ($errors->has("pegawai_yang_dinilai"))

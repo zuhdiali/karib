@@ -30,7 +30,7 @@ class PenilaianController extends Controller
                     ['penilai', '=', Auth::user()->id],
                 ])
                 ->groupBy('pegawai_id')
-                ->having('jumlah_penilaian', '=', 3)
+                ->having('jumlah_penilaian', '=', 2)
                 ->count();
 
             $totalPenilaian = Penilaian::where([
@@ -39,7 +39,7 @@ class PenilaianController extends Controller
             ])->count();
             $penilaians = Penilaian::where('penilai', Auth::user()->id)->orderBy('created_at', 'desc')->get();
             $pegawaiBelumDinilai = ($this->pegawaiBelumDinilaiMingguIni(Auth::user()->id));
-            $totalPenilaianYangBelumDilakukan = Pegawai::where('flag', null)->count() * 3 - $totalPenilaian;
+            $totalPenilaianYangBelumDilakukan = Pegawai::where('flag', null)->count() * 2 - $totalPenilaian;
         } else {
             // Jika yang login adalah admin, ambil semua riwayat penilaian
             $penilaians = Penilaian::orderBy('created_at', 'desc')->get();
@@ -50,9 +50,9 @@ class PenilaianController extends Controller
                     ['tanggal_awal_mingguan', '=', Carbon::now()->startOfWeek()->format('Y-m-d')]
                 ])
                 ->groupBy('pegawai_id')
-                ->having('jumlah_penilaian', '=', 9)
+                ->having('jumlah_penilaian', '=', 2)
                 ->count();
-            $totalPenilaianYangBelumDilakukan = Pegawai::where('flag', null)->count() * 9 - $totalPenilaian;
+            $totalPenilaianYangBelumDilakukan = Pegawai::where('flag', null)->count() * 2 - $totalPenilaian;
         }
         foreach ($penilaians as $penilaian) {
             $penilaian->pegawai = Pegawai::find($penilaian->pegawai_id);
@@ -186,7 +186,7 @@ class PenilaianController extends Controller
     private function pegawaiBelumDinilaiMingguIni($id_penilai)
     {
         $pegawais = DB::table('pegawais')
-            ->select('pegawais.*', DB::raw('COUNT(penilaians.id) as total_penilaian'))
+            ->select('pegawais.*', DB::raw('COUNT(penilaians.id) as total_penilaian'), DB::raw('MAX(penilaians.created_at) as tanggal_terakhir_penilaian'))
             ->where('pegawais.flag', '=', null)
             ->leftJoin('penilaians', function ($join) use ($id_penilai) {
                 $join->on('pegawais.id', '=', 'penilaians.pegawai_id')
@@ -194,9 +194,10 @@ class PenilaianController extends Controller
                     ->where('penilaians.penilai', '=', $id_penilai);
             })
             ->groupBy('pegawais.id')
-            ->having('total_penilaian', '<', 3)
+            ->having('total_penilaian', '<', 2)
             ->orderBy('pegawais.nama', 'asc')
             ->get();
+
         return $pegawais;
     }
 

@@ -102,12 +102,12 @@
                     </li>
                     @endif
 
-                  <li class="nav-item {{ Request::path() ==  'penilaian/ruangan' ? 'active' : ''  }}">
+                  <!-- <li class="nav-item {{ Request::path() ==  'penilaian/ruangan' ? 'active' : ''  }}">
                     <a href="{{route('penilaian.ruangan.index')}}">
                         <i class="fas fa-clipboard-check"></i>
                         <p>Ruangan</p>
                     </a>
-                  </li>
+                  </li> -->
                   @endif
                   
 

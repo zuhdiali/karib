@@ -74,7 +74,7 @@
                           <tr>
                             <th scope="row">{{$p->nama}}</th>
                             <td>{{$p->jumlah_penilaian}}</td>
-                            <td>{{$jumlah_pegawai*3 - $p->jumlah_penilaian}}</td>
+                            <td>{{$jumlah_pegawai*2 - $p->jumlah_penilaian}}</td>
                           </tr>
                         @endif
                       @endforeach
@@ -159,7 +159,7 @@ $(document).ready(function () {
                             <tr>
                               <th scope="row">${p.nama}</th>
                               <td>${p.jumlah_penilaian}</td>
-                              <td>${jumlah_pegawai*3 - p.jumlah_penilaian}</td>
+                              <td>${jumlah_pegawai*2 - p.jumlah_penilaian}</td>
                             </tr>
                           `);
                         }
