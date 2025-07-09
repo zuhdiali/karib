@@ -160,7 +160,7 @@ $(document).ready(function () {
                             <tr>
                               <th scope="row">${p.nama}</th>
                               <td>${p.jumlah_penilaian}</td>
-                              <td>${jumlah_pegawai*2 - p.jumlah_penilaian}</td>
+                              
                             </tr>
                           `);
                         }
@@ -168,7 +168,7 @@ $(document).ready(function () {
                             <tr>
                                 <th scope="row">${p.nama}</th>
                                 <td>${p.jumlah_penilaian_ruangan}</td>
-                                <td>${jumlah_ruangan - p.jumlah_penilaian_ruangan}</td>
+                                
                             </tr>
                         `);
                     });
