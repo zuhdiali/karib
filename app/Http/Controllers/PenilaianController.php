@@ -183,7 +183,7 @@ class PenilaianController extends Controller
             ->with('success', 'Penilaian berhasil dihapus.');
     }
 
-    private function pegawaiBelumDinilaiMingguIni($id_penilai)
+    public static function pegawaiBelumDinilaiMingguIni($id_penilai)
     {
         $pegawais = DB::table('pegawais')
             ->select('pegawais.*', DB::raw('COUNT(penilaians.id) as total_penilaian'), DB::raw('MAX(penilaians.created_at) as tanggal_terakhir_penilaian'))
@@ -198,6 +198,23 @@ class PenilaianController extends Controller
             ->orderBy('pegawais.nama', 'asc')
             ->get();
 
+        // Id ruang teknis (kasi dan pengolahan) = 3
+        // Id ruang umum = 1
+        // Id ruang ksk = 4
+        $ruangYangDinilai = null;
+        if (str_contains(Auth::user()->username, 'ksk')) {
+            $ruangYangDinilai = 3;
+        } else if (str_contains(Auth::user()->username, 'teknis')) {
+            $ruangYangDinilai = 1;
+        } else if (str_contains(Auth::user()->username, 'umum')) {
+            $ruangYangDinilai = 4;
+        }
+
+        // Filter pegawai berdasarkan ruang yang dinilai
+        $pegawais = $pegawais->filter(function ($pegawai) use ($ruangYangDinilai) {
+            return $pegawai->ruangan == $ruangYangDinilai;
+        });
+        // dd($pegawais);
         return $pegawais;
     }
 

@@ -7,7 +7,7 @@ use App\Models\Ruangan;
 use App\Models\Pegawai;
 use App\Models\Penilaian;
 use App\Models\PenilaianRuangan;
-
+use App\Http\Controllers\PenilaianController;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -36,7 +36,12 @@ class MainController extends Controller
 
         // Progress penilaian 
         $penilais = User::where('role', 'Penilai')->get();
-        $jumlah_pegawai = Pegawai::where('flag', null)->count();
+        // if(Auth::check()){
+        //     $jumlah_pegawai = PenilaianController::pegawaiBelumDinilaiMingguIni(Auth::user()->id)->count();
+        // }
+        // else {
+            $jumlah_pegawai = Pegawai::where('flag', null)->count();
+        // }
         $jumlah_ruangan = Ruangan::count();
         foreach ($penilais as $penilai) {
             $penilai->jumlah_penilaian = Penilaian::where('penilai', $penilai->id)->where('tanggal_awal_mingguan', $tanggal_awal_mingguan)->count();

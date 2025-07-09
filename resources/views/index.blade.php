@@ -56,6 +56,7 @@
                 <h4 class="card-title">Progress Penilaian Pegawai</h4>
               </div>
               <div class="card-body">
+                <p>Jumlah penilaian = jumlah pegawai yang dinilai x jumlah penilaian dalam satu hari. Misal yang menilai ruang Lanek, berarti jumlah penilaian maksimal seharusnya 6 x 2 = 12.</p>
                 <div class="table-responsive">
                   <table
                     id="basic-datatables"
@@ -65,7 +66,7 @@
                       <tr>
                         <th>Penilai</th>
                         <th>Jumlah Penilaian</th>
-                        <th>Penilaian Yang Kurang</th>
+                        {{-- <th>Penilaian Yang Kurang</th> --}}
                       </tr>
                     </thead>
                     <tbody>
@@ -74,7 +75,7 @@
                           <tr>
                             <th scope="row">{{$p->nama}}</th>
                             <td>{{$p->jumlah_penilaian}}</td>
-                            <td>{{$jumlah_pegawai*2 - $p->jumlah_penilaian}}</td>
+                            {{-- <td>{{$jumlah_pegawai*2 - $p->jumlah_penilaian}}</td>   --}}
                           </tr>
                         @endif
                       @endforeach
@@ -86,7 +87,7 @@
           </div>
 
           {{-- Progress penilaian pegawai --}}
-          <div class="col col-lg-6">
+          {{-- <div class="col col-lg-6">
             <div class="card">
               <div class="card-header">
                 <h4 class="card-title">Progress Penilaian Ruangan</h4>
@@ -117,7 +118,7 @@
                 </div>
               </div>
             </div>
-          </div>
+          </div> --}}
         </div>
       </div>
     </div>
