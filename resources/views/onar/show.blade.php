@@ -54,7 +54,7 @@
                                                         </div>
                                                         @endif
                                                     </td>
-                                                      {{-- <td>{{$p->nominasiOnar->pegawai->nama}}</td> --}}
+                                                      {{-- <td>{{$p->nominasiOnar->outsourcing->nama}}</td> --}}
                                                     </tr>
                                                 @endforeach
                                               </tbody>
@@ -84,7 +84,7 @@
                                                 @foreach($penilaianOnars as $p)
                                                     <tr>
                                                       <td scope="row">{{$p->penilai->nama}}</td>
-                                                      <td>{{$p->nominasiOnar->pegawai->nama}}</td>
+                                                      <td>{{$p->nominasiOnar->outsourcing->nama}}</td>
                                                     </tr>
                                                 @endforeach
                                               </tbody>

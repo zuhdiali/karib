@@ -40,7 +40,7 @@ class MainController extends Controller
         //     $jumlah_pegawai = PenilaianController::pegawaiBelumDinilaiMingguIni(Auth::user()->id)->count();
         // }
         // else {
-            $jumlah_pegawai = Pegawai::where('flag', null)->count();
+        $jumlah_pegawai = Pegawai::where('flag', null)->count();
         // }
         $jumlah_ruangan = Ruangan::count();
         foreach ($penilais as $penilai) {
@@ -545,6 +545,9 @@ class MainController extends Controller
         foreach ($penilaian_ruangans as $ruangan) {
             $ruangan->ruangan = Ruangan::find($ruangan->ruangan_id);
 
+            // Inisialisasi juara ruangan
+            $ruangan->juara_ruangan = null;
+
             // Lakukan query untuk menghitung rata-rata total_nilai dari kepala BPS
             $penilaian_kepala_bps = DB::table('penilaian_ruangans')
                 ->where('penilai', 0)
@@ -583,6 +586,28 @@ class MainController extends Controller
             if ($ruangan->nilai_akhir > $nilai_ruang_tinggi) {
                 $nilai_ruang_tinggi = $ruangan->nilai_akhir;
                 $nilai_ruang_tinggi_nama = $ruangan->ruangan->nama;
+            }
+
+            // Menghitung juara tiap ruangan
+
+            foreach ($penilaians as $penilaian) {
+                if ($penilaian->pegawai->ruangan == $ruangan->ruangan_id) {
+                    if ($ruangan->juara_ruangan == null) {
+                        $ruangan->juara_ruangan = (object) [
+                            'nama' => $penilaian->pegawai->nama,
+                            'nilai' => $penilaian->rerata_total_nilai
+                        ];
+                    } else {
+                        if ($penilaian->rerata_total_nilai > $ruangan->juara_ruangan->nilai) {
+                            $ruangan->juara_ruangan = (object) [
+                                'nama' => $penilaian->pegawai->nama,
+                                'nilai' => $penilaian->rerata_total_nilai
+                            ];
+                        } elseif ($penilaian->rerata_total_nilai == $ruangan->juara_ruangan->nilai) {
+                            $ruangan->juara_ruangan->nama .= " & " . $penilaian->pegawai->nama;
+                        }
+                    }
+                }
             }
         }
 

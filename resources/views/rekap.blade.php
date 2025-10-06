@@ -47,7 +47,7 @@
                             @endforeach
                         </select>
                       </div>
-                      <hr />
+                      {{-- <hr /> --}}
                   </div>
                   <div class="tab-pane fade" id="pills-profile-nobd" role="tabpanel" aria-labelledby="opsi-bulanan">
                     <div class="form-group">
@@ -80,17 +80,59 @@
                     </div>
                   </div>
                 </div>
-                <h5>Juara Ruangan: <strong class="juara_ruangan_mingguan_nama">{{$nilai_ruang_tinggi_nama}}</strong></h5>
+                {{-- <h5>Juara Ruangan: <strong class="juara_ruangan_mingguan_nama">{{$nilai_ruang_tinggi_nama}}</strong></h5>
                 <h5>Nilai: <strong class="juara_ruangan_mingguan">{{$nilai_ruang_tinggi}}</strong></h5>
                 <hr />
                 <h5>Juara Pegawai: <strong class="juara_pegawai_mingguan_nama">{{$nilai_pegawai_tinggi_nama}}</strong></h5>
-                <h5>Nilai: <strong class="juara_pegawai_mingguan">{{$nilai_pegawai_tinggi}}</strong></h5>
+                <h5>Nilai: <strong class="juara_pegawai_mingguan">{{$nilai_pegawai_tinggi}}</strong></h5> --}}
               </div>
             </div>
           </div>
 
-          {{-- Rekap Penilaian Ruangan --}}
+          {{-- Rekap Juara Per Ruangan --}}
           <div class="col-md-12">
+            <div class="card">
+              <div class="card-header">
+                <h4 class="card-title">Rekap Juara Per Ruangan</h4>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table
+                    id="basic-datatables-2"
+                    class="display table table-striped table-hover"
+                  >
+                    <thead>
+                      <tr>
+                        <th>Ruangan</th>
+                        <th>Nama Pemenang</th>
+                        {{-- <th>Keindahan</th>
+                        <th>Kebersihan</th> --}}
+                        <th>Total Nilai</th>
+                        {{-- <th>Nilai rata-rata Pegawai</th>
+                        <th>Nilai Akhir</th> --}}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @foreach($penilaian_ruangans as $nilai)
+                        <tr>
+                          <th scope="row">{{$nilai->ruangan->nama}}</th>
+                          <td>{{$nilai->juara_ruangan->nama}}</td>
+                          {{-- <td>{{$nilai->rerata_keindahan}}</td>
+                          <td>{{$nilai->rerata_kebersihan}}</td> --}}
+                          <td>{{$nilai->juara_ruangan->nilai}}</td>
+                          {{-- <td>{{$nilai->rerata_pegawai->rerata_nilai}}</td>
+                          <td>{{$nilai->nilai_akhir}}</td> --}}
+                        </tr>
+                      @endforeach
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {{-- Rekap Penilaian Ruangan Lama --}}
+          {{-- <div class="col-md-12">
             <div class="card">
               <div class="card-header">
                 <h4 class="card-title">Rekap Penilaian Ruangan</h4>
@@ -109,7 +151,6 @@
                         <th>Kebersihan</th>
                         <th>Total Nilai</th>
                         <th>Nilai rata-rata Pegawai</th>
-                        {{-- <th>Penilaian Kepala BPS</th> --}}
                         <th>Nilai Akhir</th>
                       </tr>
                     </thead>
@@ -122,7 +163,6 @@
                           <td>{{$nilai->rerata_kebersihan}}</td>
                           <td>{{$nilai->rerata_total_nilai}}</td>
                           <td>{{$nilai->rerata_pegawai->rerata_nilai}}</td>
-                          {{-- <td>{{$nilai->penilaian_kepala_bps->total_nilai}}</td> --}}
                           <td>{{$nilai->nilai_akhir}}</td>
                         </tr>
                       @endforeach
@@ -131,7 +171,7 @@
                 </div>
               </div>
             </div>
-          </div>
+          </div> --}}
 
           {{-- Rekap Penilaian Pegawai --}}
           <div class="col-md-12">
@@ -213,15 +253,14 @@
           // Populate basic-data-tables-3
           if (msg.penilaian_ruangans) {
             msg.penilaian_ruangans.forEach(function (nilai) {
+              if(!nilai.juara_ruangan){
+                nilai.juara_ruangan = {nama: '-', nilai: '-'};
+              };
               $("#basic-datatables-2 tbody").append(`
                 <tr>
                   <th scope="row">${nilai.ruangan.nama}</th>
-                  <td>${nilai.rerata_kerapian}</td>
-                  <td>${nilai.rerata_keindahan}</td>
-                  <td>${nilai.rerata_kebersihan}</td>
-                  <td>${nilai.rerata_total_nilai}</td>
-                  <td>${nilai.rerata_pegawai.rerata_nilai}</td>
-                  <td>${nilai.nilai_akhir}</td>
+                  <td>${nilai.juara_ruangan.nama}</td>
+                  <td>${nilai.juara_ruangan.nilai}</td>
                 </tr>
               `);
             });
