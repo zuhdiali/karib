@@ -108,7 +108,6 @@
                           </button>
                           </form>
 
-                          @if(Auth::check() && Auth::user()->role == 'Admin')
                           <form action="{{url('onar/show', $onar->id)}}">
                             <button
                               type="submit"
@@ -117,10 +116,11 @@
                               class="btn btn-link btn-primary btn-lg"
                               data-original-title="Lihat ONAR"
                             >
-                            <i class="fas fa-eye"></i>
-                          </button>
+                              <i class="fas fa-eye"></i>
+                            </button>
                           </form>
 
+                        @if(Auth::check() && Auth::user()->role == 'Admin')
                           <form action="{{url('onar/edit', $onar->id)}}">
                             <button
                               type="submit"

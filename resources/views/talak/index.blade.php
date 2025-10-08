@@ -108,7 +108,7 @@
                           </button>
                           </form>
 
-                          @if(Auth::check() && Auth::user()->role == 'Admin')
+                          @if(date('Y-m-d') > $talak->tgl_penilaian || (Auth::check() && Auth::user()->role == 'Admin'))
                           <form action="{{url('talak/show', $talak->id)}}">
                             <button
                               type="submit"
@@ -117,10 +117,13 @@
                               class="btn btn-link btn-primary btn-lg"
                               data-original-title="Lihat TALAK"
                             >
-                            <i class="fas fa-eye"></i>
-                          </button>
+                              <i class="fas fa-eye"></i>
+                            </button>
                           </form>
-
+                          @endif
+                          
+                          @if(Auth::check() && Auth::user()->role == 'Admin')
+                            
                           <form action="{{url('talak/edit', $talak->id)}}">
                             <button
                               type="submit"
@@ -132,6 +135,7 @@
                             <i class="fa fa-edit"></i>
                           </button>
                           </form>
+                            
 
                           <button
                             type="button"

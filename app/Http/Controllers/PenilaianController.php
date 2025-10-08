@@ -203,18 +203,18 @@ class PenilaianController extends Controller
         // Id ruang ksk = 4
         $ruangYangDinilai = null;
         if (str_contains(Auth::user()->username, 'ksk')) {
-            $ruangYangDinilai = 3;
-        } else if (str_contains(Auth::user()->username, 'teknis')) {
             $ruangYangDinilai = 1;
-        } else if (str_contains(Auth::user()->username, 'umum')) {
+        } else if (str_contains(Auth::user()->username, 'teknis')) {
             $ruangYangDinilai = 4;
+        } else if (str_contains(Auth::user()->username, 'umum')) {
+            $ruangYangDinilai = 3;
         }
 
         // Filter pegawai berdasarkan ruang yang dinilai
         $pegawais = $pegawais->filter(function ($pegawai) use ($ruangYangDinilai) {
             return $pegawai->ruangan == $ruangYangDinilai;
         });
-        // dd($pegawais);
+
         return $pegawais;
     }
 
