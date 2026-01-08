@@ -523,7 +523,22 @@ class MainController extends Controller
             }
         }
 
-        // Mengambil data penilaian ruangan
+        // Mengambil data penilaian ruangan (sebelumya pake ini)
+        // $penilaian_ruangans = DB::table('penilaian_ruangans')
+        //     ->select(
+        //         'ruangan_id',
+        //         DB::raw('round(AVG(kebersihan),2) as "rerata_kebersihan"'),
+        //         DB::raw('round(AVG(kerapian),2) as "rerata_kerapian"'),
+        //         DB::raw('round(AVG(keindahan),2) as "rerata_keindahan"'),
+        //         DB::raw('round(AVG(total_nilai),2) as "rerata_total_nilai"')
+        //     )
+        //     ->where('tanggal_penilaian', '>=', $tanggal_awal_triwulanan)
+        //     ->where('tanggal_penilaian', '<=', $tanggal_akhir_triwulanan)
+        //     ->where('penilai', '<>', 0)
+        //     ->groupBy('ruangan_id')
+        //     ->get();
+
+        // Mengambil data penilaian ruangan (sekarang pake ini karena hanya ingin tahu nama ruangan saja)
         $penilaian_ruangans = DB::table('penilaian_ruangans')
             ->select(
                 'ruangan_id',
@@ -532,8 +547,6 @@ class MainController extends Controller
                 DB::raw('round(AVG(keindahan),2) as "rerata_keindahan"'),
                 DB::raw('round(AVG(total_nilai),2) as "rerata_total_nilai"')
             )
-            ->where('tanggal_penilaian', '>=', $tanggal_awal_triwulanan)
-            ->where('tanggal_penilaian', '<=', $tanggal_akhir_triwulanan)
             ->where('penilai', '<>', 0)
             ->groupBy('ruangan_id')
             ->get();
